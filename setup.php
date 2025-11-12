@@ -163,7 +163,26 @@ function createConfigFile($host, $dbname, $username, $password) {
     $config .= "];\n";
 
     $configFile = BASE_DIR . '/app/config/config.php';
-    return file_put_contents($configFile, $config);
+    $configDir = dirname($configFile);
+
+    // Pārbaudīt vai direktorija eksistē un ir writable
+    if (!is_dir($configDir)) {
+        mkdir($configDir, 0755, true);
+    }
+
+    if (!is_writable($configDir)) {
+        return false;
+    }
+
+    $result = file_put_contents($configFile, $config);
+
+    // Pārbaudīt, vai fails tika izveidots un ir lasāms
+    if ($result !== false && file_exists($configFile)) {
+        chmod($configFile, 0644);
+        return true;
+    }
+
+    return false;
 }
 
 // Apstrādāt formu

@@ -97,7 +97,7 @@ class Lang {
         return $languages;
     }
 
-    private function getLanguageName($code) {
+    public function getLanguageName($code) {
         $names = [
             'lv' => 'Latviešu',
             'en' => 'English',
