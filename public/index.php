@@ -1,21 +1,18 @@
 <?php
 /**
  * Marketplace Platform - Entry Point
- * Galvenais ievades punkts
+ * Vienkāršota versija BEZ .htaccess atkarībām
  */
 
 // Definēt root direktoriju
 define('ROOT_DIR', dirname(__DIR__));
 
-// Pārbaudīt vai instalēts (izņemot, ja jau ir /install/ vai /assets/)
-$requestUri = $_SERVER['REQUEST_URI'] ?? '';
-$isInstallPage = strpos($requestUri, '/install') === 0 || strpos($requestUri, '/assets') === 0;
-
+// Pārbaudīt vai instalēts
 $configFile = ROOT_DIR . '/app/config/config.php';
 
-if (!file_exists($configFile) && !$isInstallPage) {
-    // Pāradresēt uz instalāciju
-    header('Location: /install/');
+if (!file_exists($configFile)) {
+    // Pāradresēt uz standalone instalāciju
+    header('Location: ../setup.php');
     exit;
 }
 
