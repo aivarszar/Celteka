@@ -56,6 +56,14 @@ class AuthHelper {
         return Session::isLoggedIn();
     }
 
+    public static function isLoggedIn() {
+        return Session::isLoggedIn();
+    }
+
+    public static function getUserId() {
+        return Session::getUserId();
+    }
+
     public static function user() {
         return Session::getUser();
     }

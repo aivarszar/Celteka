@@ -9,7 +9,7 @@ class ProfileController {
     private $userModel;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = db();
         require_once ROOT_DIR . '/app/models/User.php';
         $this->userModel = new User();
     }
