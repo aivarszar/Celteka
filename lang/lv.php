@@ -207,6 +207,8 @@ return [
         'orders' => 'Pasūtījumi',
         'sales' => 'Pārdošanas',
         'reviews' => 'Atsauksmes',
+        'items' => 'Preces',
+        'more_items' => 'vairāk preces',
     ],
 
     'messages' => [

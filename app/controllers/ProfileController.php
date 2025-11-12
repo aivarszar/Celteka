@@ -253,7 +253,7 @@ class ProfileController {
                 );
 
                 $stats['reviews_count'] = $this->db->fetchColumn(
-                    "SELECT COUNT(*) FROM reviews WHERE buyer_id = ?",
+                    "SELECT COUNT(*) FROM reviews WHERE reviewer_id = ?",
                     [$userId]
                 );
             } elseif ($role === 'seller') {
@@ -264,16 +264,12 @@ class ProfileController {
                 );
 
                 $stats['orders_count'] = $this->db->fetchColumn(
-                    "SELECT COUNT(DISTINCT o.id) FROM orders o
-                     JOIN products p ON o.product_id = p.id
-                     WHERE p.seller_id = ?",
+                    "SELECT COUNT(*) FROM orders WHERE seller_id = ?",
                     [$userId]
                 );
 
                 $stats['reviews_count'] = $this->db->fetchColumn(
-                    "SELECT COUNT(DISTINCT r.id) FROM reviews r
-                     JOIN products p ON r.product_id = p.id
-                     WHERE p.seller_id = ?",
+                    "SELECT COUNT(*) FROM reviews WHERE reviewed_id = ?",
                     [$userId]
                 );
             }

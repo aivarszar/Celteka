@@ -140,10 +140,10 @@ class OrderController {
      */
     private function getBuyerOrders($userId) {
         try {
-            $sql = "SELECT o.*, p.title as product_title, p.slug as product_slug,
-                           u.full_name as seller_name
+            $sql = "SELECT o.*, u.full_name as seller_name,
+                           (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as items_count,
+                           (SELECT product_title FROM order_items WHERE order_id = o.id LIMIT 1) as product_title
                     FROM orders o
-                    JOIN products p ON o.product_id = p.id
                     JOIN users u ON o.seller_id = u.id
                     WHERE o.buyer_id = ?
                     ORDER BY o.created_at DESC";
@@ -160,10 +160,10 @@ class OrderController {
      */
     private function getSellerOrders($userId) {
         try {
-            $sql = "SELECT o.*, p.title as product_title, p.slug as product_slug,
-                           u.full_name as buyer_name, u.email as buyer_email
+            $sql = "SELECT o.*, u.full_name as buyer_name, u.email as buyer_email,
+                           (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as items_count,
+                           (SELECT product_title FROM order_items WHERE order_id = o.id LIMIT 1) as product_title
                     FROM orders o
-                    JOIN products p ON o.product_id = p.id
                     JOIN users u ON o.buyer_id = u.id
                     WHERE o.seller_id = ?
                     ORDER BY o.created_at DESC";

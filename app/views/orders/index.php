@@ -58,9 +58,14 @@
                         <div class="order-body">
                             <div class="order-product">
                                 <h3>
-                                    <a href="/product/<?= htmlspecialchars($order['product_slug']) ?>">
+                                    <?php if (!empty($order['product_title'])): ?>
                                         <?= htmlspecialchars($order['product_title']) ?>
-                                    </a>
+                                        <?php if ($order['items_count'] > 1): ?>
+                                            <span class="items-badge">+<?= ($order['items_count'] - 1) ?> <?= Lang::get('more_items') ?></span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <?= $order['items_count'] ?> <?= Lang::get('products') ?>
+                                    <?php endif; ?>
                                 </h3>
                                 <div class="order-details">
                                     <?php if ($user['role'] === 'seller'): ?>
@@ -69,7 +74,7 @@
                                     <?php else: ?>
                                         <p><strong><?= Lang::get('seller') ?>:</strong> <?= htmlspecialchars($order['seller_name']) ?></p>
                                     <?php endif; ?>
-                                    <p><strong><?= Lang::get('quantity') ?>:</strong> <?= htmlspecialchars($order['quantity']) ?></p>
+                                    <p><strong><?= Lang::get('items') ?>:</strong> <?= htmlspecialchars($order['items_count']) ?></p>
                                 </div>
                             </div>
 
@@ -182,6 +187,19 @@
 
         .order-product h3 {
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .items-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background: #e3f2fd;
+            color: #1976D2;
+            border-radius: 4px;
+            font-weight: 600;
         }
 
         .order-product a {
