@@ -11,7 +11,7 @@ class ProfileController {
     public function __construct() {
         $this->db = Database::getInstance();
         require_once ROOT_DIR . '/app/models/User.php';
-        $this->userModel = new User($this->db);
+        $this->userModel = new User();
     }
 
     /**
