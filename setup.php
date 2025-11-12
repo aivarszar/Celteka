@@ -61,15 +61,33 @@ function testDatabaseConnection($host, $dbname, $username, $password) {
     }
 }
 
-function installDatabase($host, $dbname, $username, $password) {
+function installDatabase($host, $dbname, $username, $password, $cleanInstall = true) {
     try {
         $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
         $pdo = new PDO($dsn, $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
+        // Ja tīra instalācija, iztīrīt esošās tabulas
+        if ($cleanInstall) {
+            $tables = ['reviews', 'order_items', 'orders', 'product_images', 'product_meta', 'products',
+                       'categories', 'locations', 'user_meta', 'users', 'user_roles', 'delivery_methods', 'settings'];
+
+            $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+            foreach ($tables as $table) {
+                $pdo->exec("DROP TABLE IF EXISTS {$table}");
+            }
+            $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
+        }
+
         // Izpildīt schema.sql
         if (file_exists(BASE_DIR . '/database/schema.sql')) {
             $schema = file_get_contents(BASE_DIR . '/database/schema.sql');
-            $pdo->exec($schema);
+            $statements = explode(';', $schema);
+            foreach ($statements as $statement) {
+                $statement = trim($statement);
+                if (!empty($statement)) {
+                    $pdo->exec($statement);
+                }
+            }
         }
 
         // Izpildīt locations_lv.sql
