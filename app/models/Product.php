@@ -66,8 +66,10 @@ class Product {
         }
 
         if (!empty($filters['search'])) {
-            $where[] = '(p.title LIKE :search OR p.description LIKE :search)';
-            $params['search'] = '%' . $filters['search'] . '%';
+            $where[] = '(p.title LIKE :search_title OR p.description LIKE :search_desc)';
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params['search_title'] = $searchTerm;
+            $params['search_desc'] = $searchTerm;
         }
 
         if (!empty($filters['seller_id'])) {
@@ -184,8 +186,10 @@ class Product {
         }
 
         if (!empty($filters['search'])) {
-            $where[] = '(title LIKE :search OR description LIKE :search)';
-            $params['search'] = '%' . $filters['search'] . '%';
+            $where[] = '(title LIKE :search_title OR description LIKE :search_desc)';
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params['search_title'] = $searchTerm;
+            $params['search_desc'] = $searchTerm;
         }
 
         $whereClause = implode(' AND ', $where);
