@@ -141,7 +141,7 @@ class OrderController {
     private function getBuyerOrders($userId) {
         try {
             $sql = "SELECT o.*, p.title as product_title, p.slug as product_slug,
-                           u.name as seller_name
+                           u.full_name as seller_name
                     FROM orders o
                     JOIN products p ON o.product_id = p.id
                     JOIN users u ON o.seller_id = u.id
@@ -161,7 +161,7 @@ class OrderController {
     private function getSellerOrders($userId) {
         try {
             $sql = "SELECT o.*, p.title as product_title, p.slug as product_slug,
-                           u.name as buyer_name, u.email as buyer_email
+                           u.full_name as buyer_name, u.email as buyer_email
                     FROM orders o
                     JOIN products p ON o.product_id = p.id
                     JOIN users u ON o.buyer_id = u.id
