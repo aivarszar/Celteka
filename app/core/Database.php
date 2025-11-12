@@ -7,8 +7,11 @@
 class Database {
     private static $instance = null;
     private $pdo;
+    private $config;
 
     private function __construct($config) {
+        $this->config = $config;
+
         $dsn = sprintf(
             "mysql:host=%s;dbname=%s;charset=%s",
             $config['host'],
@@ -25,7 +28,15 @@ class Database {
         try {
             $this->pdo = new PDO($dsn, $config['username'], $config['password'], $options);
         } catch (PDOException $e) {
-            die("Datubāzes savienojuma kļūda: " . $e->getMessage());
+            $errorMsg = "Datubāzes savienojuma kļūda: " . $e->getMessage();
+            error_log($errorMsg);
+
+            // Ja debug režīms, rādīt detalizētu kļūdu
+            if (defined('DEBUG') && DEBUG) {
+                die("<h3>Database Connection Error</h3><pre>" . htmlspecialchars($errorMsg) . "\n\nDSN: " . htmlspecialchars($dsn) . "</pre>");
+            }
+
+            die("Datubāzes savienojuma kļūda. Lūdzu pārbaudiet konfigurāciju.");
         }
     }
 

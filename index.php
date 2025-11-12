@@ -19,6 +19,15 @@ if (!file_exists($configFile)) {
 // Ielādēt konfigurāciju
 $config = require $configFile;
 
+// Definēt DEBUG režīmu
+if (isset($config['app']['debug'])) {
+    define('DEBUG', $config['app']['debug']);
+    if (DEBUG) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+    }
+}
+
 // Ielādēt core klases
 require_once ROOT_DIR . '/app/core/Database.php';
 require_once ROOT_DIR . '/app/core/Session.php';

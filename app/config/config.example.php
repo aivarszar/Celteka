@@ -7,7 +7,7 @@
 return [
     // Datubāzes iestatījumi
     'database' => [
-        'host' => 'localhost',
+        'host' => '127.0.0.1',  // Izmanto IP, nevis localhost, lai izvairītos no socket problēmām
         'dbname' => 'celteka_db',
         'username' => 'root',
         'password' => '',
