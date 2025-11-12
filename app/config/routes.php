@@ -51,10 +51,11 @@ $router->post('/order/{id}/cancel', 'OrderController@cancel');
 $router->post('/review/order/{id}', 'ReviewController@store', 'review.store');
 
 // Profils
-$router->get('/profile', 'ProfileController@show', 'profile');
+$router->get('/profile', 'ProfileController@index', 'profile');
 $router->get('/profile/edit', 'ProfileController@edit', 'profile.edit');
-$router->post('/profile', 'ProfileController@update');
-$router->get('/user/{id}', 'ProfileController@showPublic', 'user.show');
+$router->post('/profile/update', 'ProfileController@update', 'profile.update');
+$router->get('/profile/change-password', 'ProfileController@changePassword', 'profile.password');
+$router->post('/profile/update-password', 'ProfileController@updatePassword', 'profile.password.update');
 
 // Administratora funkcijas
 $router->get('/admin', 'AdminController@index', 'admin');
