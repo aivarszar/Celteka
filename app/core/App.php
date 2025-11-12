@@ -17,13 +17,19 @@ class App {
         // Iestatīt laika zonu
         date_default_timezone_set($config['app']['timezone']);
 
-        // Iestatīt kļūdu ziņošanu
+        // Iestatīt kļūdu ziņošanu un DEBUG konstanti
         if ($config['app']['debug']) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
+            if (!defined('DEBUG')) {
+                define('DEBUG', true);
+            }
         } else {
             error_reporting(0);
             ini_set('display_errors', 0);
+            if (!defined('DEBUG')) {
+                define('DEBUG', false);
+            }
         }
 
         // Inicializēt datubāzi

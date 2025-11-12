@@ -56,21 +56,26 @@ class Database {
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            // Detalizēts error logging
-            $errorMsg = "SQL kļūda: " . $e->getMessage();
-            $errorMsg .= "\nSQL: " . $sql;
-            $errorMsg .= "\nParams: " . json_encode($params);
-            $errorMsg .= "\nStack trace: " . $e->getTraceAsString();
-            error_log($errorMsg);
+            // Detalizēts error logging - izmanto atsevišķus error_log izsaukumus
+            error_log("========== SQL KĻŪDA ==========");
+            error_log("ERROR: " . $e->getMessage());
+            error_log("ERROR CODE: " . $e->getCode());
+            error_log("SQL: " . $sql);
+            error_log("PARAMS: " . json_encode($params, JSON_UNESCAPED_UNICODE));
+            error_log("FILE: " . $e->getFile() . " LINE: " . $e->getLine());
+            error_log("==============================");
 
             // Ja debug režīms, parādīt detalizētu kļūdu
             if (defined('DEBUG') && DEBUG) {
                 echo "<h3>Database Query Error</h3>";
                 echo "<pre>";
-                echo "Error: " . htmlspecialchars($e->getMessage()) . "\n\n";
-                echo "SQL: " . htmlspecialchars($sql) . "\n\n";
-                echo "Params: " . htmlspecialchars(json_encode($params, JSON_PRETTY_PRINT)) . "\n\n";
-                echo "Stack trace:\n" . htmlspecialchars($e->getTraceAsString());
+                echo "ERROR: " . htmlspecialchars($e->getMessage()) . "\n";
+                echo "ERROR CODE: " . htmlspecialchars($e->getCode()) . "\n\n";
+                echo "SQL:\n" . htmlspecialchars($sql) . "\n\n";
+                echo "PARAMS:\n" . htmlspecialchars(json_encode($params, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) . "\n\n";
+                echo "FILE: " . htmlspecialchars($e->getFile()) . "\n";
+                echo "LINE: " . htmlspecialchars($e->getLine()) . "\n\n";
+                echo "STACK TRACE:\n" . htmlspecialchars($e->getTraceAsString());
                 echo "</pre>";
                 exit;
             }
