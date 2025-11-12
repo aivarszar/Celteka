@@ -7,10 +7,13 @@
 // Definēt root direktoriju
 define('ROOT_DIR', dirname(__DIR__));
 
-// Pārbaudīt vai instalēts
+// Pārbaudīt vai instalēts (izņemot, ja jau ir /install/ vai /assets/)
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$isInstallPage = strpos($requestUri, '/install') === 0 || strpos($requestUri, '/assets') === 0;
+
 $configFile = ROOT_DIR . '/app/config/config.php';
 
-if (!file_exists($configFile)) {
+if (!file_exists($configFile) && !$isInstallPage) {
     // Pāradresēt uz instalāciju
     header('Location: /install/');
     exit;
