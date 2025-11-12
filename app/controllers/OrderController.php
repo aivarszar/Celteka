@@ -45,7 +45,11 @@ class OrderController {
             $orders = $this->getBuyerOrders($userId);
         }
 
-        require_once ROOT_DIR . '/app/views/orders/index.php';
+        view('orders/index', [
+            'user' => $user,
+            'orders' => $orders,
+            'config' => config()
+        ]);
     }
 
     /**
@@ -74,7 +78,10 @@ class OrderController {
             exit;
         }
 
-        require_once ROOT_DIR . '/app/views/orders/show.php';
+        view('orders/show', [
+            'order' => $order,
+            'config' => config()
+        ]);
     }
 
     /**

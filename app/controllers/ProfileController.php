@@ -35,7 +35,11 @@ class ProfileController {
         // Iegūt lietotāja statistiku
         $stats = $this->getUserStats($userId, $user['role']);
 
-        require_once ROOT_DIR . '/app/views/profile/index.php';
+        view('profile/index', [
+            'user' => $user,
+            'stats' => $stats,
+            'config' => config()
+        ]);
     }
 
     /**
@@ -56,7 +60,10 @@ class ProfileController {
             exit;
         }
 
-        require_once ROOT_DIR . '/app/views/profile/edit.php';
+        view('profile/edit', [
+            'user' => $user,
+            'config' => config()
+        ]);
     }
 
     /**
@@ -153,7 +160,9 @@ class ProfileController {
             exit;
         }
 
-        require_once ROOT_DIR . '/app/views/profile/change-password.php';
+        view('profile/change-password', [
+            'config' => config()
+        ]);
     }
 
     /**
