@@ -148,16 +148,25 @@ function view($name, $data = []) {
     require_once $viewFile;
 }
 
+function getBasePath() {
+    // Nosaka base path atkarībā no tā, kā lietotājs piekļūst
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    if (strpos($scriptName, '/public/') !== false) {
+        return '/public';
+    }
+    return '';
+}
+
 function asset($path) {
-    // Ja piekļūstam caur /public/, pievienot /public/ prefixu assets
-    $prefix = (strpos($_SERVER['REQUEST_URI'] ?? '', '/public/') === 0 || $_SERVER['REQUEST_URI'] === '/public') ? '/public' : '';
-    return config('app.url') . $prefix . '/assets/' . ltrim($path, '/');
+    // Assets ir pieejami caur symlink public/assets -> ../assets
+    $basePath = getBasePath();
+    return $basePath . '/assets/' . ltrim($path, '/');
 }
 
 function url($path = '') {
-    // Ja piekļūstam caur /public/, pievienot /public/ prefixu URL
-    $prefix = (strpos($_SERVER['REQUEST_URI'] ?? '', '/public/') === 0 || $_SERVER['REQUEST_URI'] === '/public') ? '/public' : '';
-    return config('app.url') . $prefix . '/' . ltrim($path, '/');
+    // URL ar base path
+    $basePath = getBasePath();
+    return $basePath . '/' . ltrim($path, '/');
 }
 
 function csrf_field() {
