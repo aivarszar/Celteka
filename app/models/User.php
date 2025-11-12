@@ -159,12 +159,16 @@ class User {
     }
 
     public function getAll($limit = 100, $offset = 0) {
+        // LIMIT un OFFSET prasa INT, nevis bound parameters
+        $limit = (int)$limit;
+        $offset = (int)$offset;
+
         $sql = "SELECT u.*, r.display_name as role_display_name
                 FROM users u
                 LEFT JOIN user_roles r ON u.role_id = r.id
                 ORDER BY u.created_at DESC
-                LIMIT :limit OFFSET :offset";
+                LIMIT {$limit} OFFSET {$offset}";
 
-        return $this->db->fetchAll($sql, ['limit' => $limit, 'offset' => $offset]);
+        return $this->db->fetchAll($sql, []);
     }
 }

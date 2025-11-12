@@ -51,6 +51,9 @@ class Order {
     public function getUserOrders($userId, $type = 'buyer', $limit = 50) {
         $column = ($type === 'buyer') ? 'buyer_id' : 'seller_id';
 
+        // LIMIT prasa INT, nevis bound parameters
+        $limit = (int)$limit;
+
         $sql = "SELECT o.*,
                        b.full_name as buyer_name,
                        s.full_name as seller_name
@@ -59,9 +62,9 @@ class Order {
                 LEFT JOIN users s ON o.seller_id = s.id
                 WHERE o.{$column} = :user_id
                 ORDER BY o.created_at DESC
-                LIMIT :limit";
+                LIMIT {$limit}";
 
-        return $this->db->fetchAll($sql, ['user_id' => $userId, 'limit' => $limit]);
+        return $this->db->fetchAll($sql, ['user_id' => $userId]);
     }
 
     public function updateStatus($id, $status) {
@@ -87,6 +90,10 @@ class Order {
     }
 
     public function getAll($limit = 100, $offset = 0) {
+        // LIMIT un OFFSET prasa INT, nevis bound parameters
+        $limit = (int)$limit;
+        $offset = (int)$offset;
+
         $sql = "SELECT o.*,
                        b.full_name as buyer_name,
                        s.full_name as seller_name
@@ -94,8 +101,8 @@ class Order {
                 LEFT JOIN users b ON o.buyer_id = b.id
                 LEFT JOIN users s ON o.seller_id = s.id
                 ORDER BY o.created_at DESC
-                LIMIT :limit OFFSET :offset";
+                LIMIT {$limit} OFFSET {$offset}";
 
-        return $this->db->fetchAll($sql, ['limit' => $limit, 'offset' => $offset]);
+        return $this->db->fetchAll($sql, []);
     }
 }

@@ -56,7 +56,25 @@ class Database {
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            error_log("SQL kļūda: " . $e->getMessage());
+            // Detalizēts error logging
+            $errorMsg = "SQL kļūda: " . $e->getMessage();
+            $errorMsg .= "\nSQL: " . $sql;
+            $errorMsg .= "\nParams: " . json_encode($params);
+            $errorMsg .= "\nStack trace: " . $e->getTraceAsString();
+            error_log($errorMsg);
+
+            // Ja debug režīms, parādīt detalizētu kļūdu
+            if (defined('DEBUG') && DEBUG) {
+                echo "<h3>Database Query Error</h3>";
+                echo "<pre>";
+                echo "Error: " . htmlspecialchars($e->getMessage()) . "\n\n";
+                echo "SQL: " . htmlspecialchars($sql) . "\n\n";
+                echo "Params: " . htmlspecialchars(json_encode($params, JSON_PRETTY_PRINT)) . "\n\n";
+                echo "Stack trace:\n" . htmlspecialchars($e->getTraceAsString());
+                echo "</pre>";
+                exit;
+            }
+
             throw $e;
         }
     }

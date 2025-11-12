@@ -77,6 +77,10 @@ class Product {
 
         $whereClause = implode(' AND ', $where);
 
+        // LIMIT un OFFSET prasa INT, nevis bound parameters
+        $limit = (int)$limit;
+        $offset = (int)$offset;
+
         $sql = "SELECT p.*, c.name as category_name, u.full_name as seller_name,
                        l.name as location_name,
                        (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as primary_image
@@ -86,10 +90,7 @@ class Product {
                 LEFT JOIN locations l ON p.location_id = l.id
                 WHERE {$whereClause}
                 ORDER BY p.created_at DESC
-                LIMIT :limit OFFSET :offset";
-
-        $params['limit'] = $limit;
-        $params['offset'] = $offset;
+                LIMIT {$limit} OFFSET {$offset}";
 
         return $this->db->fetchAll($sql, $params);
     }
