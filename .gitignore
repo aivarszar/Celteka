@@ -1,0 +1,38 @@
+# Configuration
+app/config/config.php
+
+# Dependencies
+vendor/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+error_log
+
+# Uploads
+assets/images/uploads/*
+!assets/images/uploads/.gitkeep
+
+# Cache
+cache/
+tmp/
+
+# Environment
+.env
+.env.local
+
+# Backup
+*.bak
+*.backup
+install.bak/
