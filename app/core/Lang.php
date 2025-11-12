@@ -5,6 +5,7 @@
  */
 
 class Lang {
+    private static $instance = null;
     private $locale;
     private $translations = [];
     private $fallbackTranslations = [];
@@ -12,6 +13,27 @@ class Lang {
     public function __construct($locale = 'lv') {
         $this->locale = $locale;
         $this->loadTranslations();
+    }
+
+    // Static wrapper lai atbalstītu Lang::get() izsaukumus view failos
+    public static function __callStatic($method, $args) {
+        if (function_exists('app')) {
+            $instance = app()->getLang();
+            if ($instance && method_exists($instance, $method)) {
+                return call_user_func_array([$instance, $method], $args);
+            }
+        }
+
+        // Fallback - ja nav app() instance
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        if (method_exists(self::$instance, $method)) {
+            return call_user_func_array([self::$instance, $method], $args);
+        }
+
+        throw new BadMethodCallException("Method {$method} does not exist");
     }
 
     private function loadTranslations() {
