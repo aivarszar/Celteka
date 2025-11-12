@@ -26,6 +26,9 @@ require_once ROOT_DIR . '/app/core/Router.php';
 require_once ROOT_DIR . '/app/core/Lang.php';
 require_once ROOT_DIR . '/app/core/App.php';
 
+// Ielādēt helpers
+require_once ROOT_DIR . '/app/helpers/AuthHelper.php';
+
 // Inicializēt aplikāciju
 $app = App::getInstance($config);
 

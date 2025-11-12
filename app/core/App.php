@@ -87,6 +87,17 @@ class App {
         $uri = $_SERVER['REQUEST_URI'];
         $method = $_SERVER['REQUEST_METHOD'];
 
+        // Noņemt /public/ prefixu no URI, ja tāds ir
+        // Tas ļauj strādāt gan ar, gan bez .htaccess redirect
+        if (strpos($uri, '/public/') === 0) {
+            $uri = substr($uri, 7); // Noņemt '/public/'
+        } elseif ($uri === '/public') {
+            $uri = '/';
+        }
+
+        // Noņemt /index.php no URI
+        $uri = str_replace('/index.php', '', $uri);
+
         try {
             $this->router->dispatch($uri, $method);
         } catch (Exception $e) {
@@ -138,11 +149,15 @@ function view($name, $data = []) {
 }
 
 function asset($path) {
-    return config('app.url') . '/assets/' . ltrim($path, '/');
+    // Ja piekļūstam caur /public/, pievienot /public/ prefixu assets
+    $prefix = (strpos($_SERVER['REQUEST_URI'] ?? '', '/public/') === 0 || $_SERVER['REQUEST_URI'] === '/public') ? '/public' : '';
+    return config('app.url') . $prefix . '/assets/' . ltrim($path, '/');
 }
 
 function url($path = '') {
-    return config('app.url') . '/' . ltrim($path, '/');
+    // Ja piekļūstam caur /public/, pievienot /public/ prefixu URL
+    $prefix = (strpos($_SERVER['REQUEST_URI'] ?? '', '/public/') === 0 || $_SERVER['REQUEST_URI'] === '/public') ? '/public' : '';
+    return config('app.url') . $prefix . '/' . ltrim($path, '/');
 }
 
 function csrf_field() {
