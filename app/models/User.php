@@ -20,7 +20,7 @@ class User {
     }
 
     public function findById($id) {
-        $sql = "SELECT u.*, r.name as role_name, r.display_name as role_display_name
+        $sql = "SELECT u.*, r.name as role, r.name as role_name, r.display_name as role_display_name
                 FROM users u
                 LEFT JOIN user_roles r ON u.role_id = r.id
                 WHERE u.id = :id";
@@ -29,7 +29,7 @@ class User {
     }
 
     public function findByEmail($email) {
-        $sql = "SELECT u.*, r.name as role_name
+        $sql = "SELECT u.*, r.name as role, r.name as role_name
                 FROM users u
                 LEFT JOIN user_roles r ON u.role_id = r.id
                 WHERE u.email = :email";
