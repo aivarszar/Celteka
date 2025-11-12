@@ -6,6 +6,9 @@
 
 $router = app()->getRouter();
 
+// Valodas maiņa
+$router->get('/lang/{locale}', 'LanguageController@change', 'language.change');
+
 // Sākumlapa
 $router->get('/', 'HomeController@index', 'home');
 

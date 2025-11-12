@@ -1,12 +1,13 @@
 <?php
 /**
- * Lang - Lokalizācijas klase
- * Atbalsta vairākas valodas ar ārējiem tulkošanas failiem
+ * Lang - Daudzvalodu lokalizācijas klase
+ * Atbalsta fallback uz EN ja nav tulkojuma
  */
 
 class Lang {
     private $locale;
     private $translations = [];
+    private $fallbackTranslations = [];
 
     public function __construct($locale = 'lv') {
         $this->locale = $locale;
@@ -14,25 +15,33 @@ class Lang {
     }
 
     private function loadTranslations() {
-        $langFile = __DIR__ . '/../../lang/' . $this->locale . '/messages.php';
-
+        // Ielādēt izvēlēto valodu
+        $langFile = ROOT_DIR . '/lang/' . $this->locale . '.php';
         if (file_exists($langFile)) {
             $this->translations = require $langFile;
-        } else {
-            error_log("Valodas fails nav atrasts: {$langFile}");
-            $this->translations = [];
+        }
+
+        // Ielādēt fallback valodu (EN) ja nav izvēlētā valoda
+        if ($this->locale !== 'en') {
+            $fallbackFile = ROOT_DIR . '/lang/en.php';
+            if (file_exists($fallbackFile)) {
+                $this->fallbackTranslations = require $fallbackFile;
+            }
         }
     }
 
     public function get($key, $params = []) {
-        $keys = explode('.', $key);
-        $value = $this->translations;
+        // Mēģināt iegūt no izvēlētās valodas
+        $value = $this->getFromArray($this->translations, $key);
 
-        foreach ($keys as $k) {
-            if (!isset($value[$k])) {
-                return $key; // Atgriezt atslēgu, ja tulkojums nav atrasts
-            }
-            $value = $value[$k];
+        // Ja nav, mēģināt no fallback (EN)
+        if ($value === null && !empty($this->fallbackTranslations)) {
+            $value = $this->getFromArray($this->fallbackTranslations, $key);
+        }
+
+        // Ja joprojām nav, atgriezt pašu atslēgu
+        if ($value === null) {
+            return $key;
         }
 
         // Aizstāt parametrus
@@ -43,12 +52,60 @@ class Lang {
         return $value;
     }
 
+    private function getFromArray($array, $key) {
+        $keys = explode('.', $key);
+        $value = $array;
+
+        foreach ($keys as $k) {
+            if (!isset($value[$k])) {
+                return null;
+            }
+            $value = $value[$k];
+        }
+
+        return $value;
+    }
+
     public function setLocale($locale) {
         $this->locale = $locale;
         $this->loadTranslations();
+
+        // Saglabāt sesijā
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $_SESSION['locale'] = $locale;
+        }
     }
 
     public function getLocale() {
         return $this->locale;
+    }
+
+    public function getAvailableLanguages() {
+        $languages = [];
+        $langDir = ROOT_DIR . '/lang';
+
+        if (is_dir($langDir)) {
+            $files = scandir($langDir);
+            foreach ($files as $file) {
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                    $code = pathinfo($file, PATHINFO_FILENAME);
+                    $languages[$code] = $this->getLanguageName($code);
+                }
+            }
+        }
+
+        return $languages;
+    }
+
+    private function getLanguageName($code) {
+        $names = [
+            'lv' => 'Latviešu',
+            'en' => 'English',
+            'ru' => 'Русский',
+            'lt' => 'Lietuvių',
+            'ee' => 'Eesti',
+        ];
+
+        return $names[$code] ?? strtoupper($code);
     }
 }

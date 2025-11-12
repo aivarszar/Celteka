@@ -35,8 +35,9 @@ class App {
         // Inicializēt router
         $this->router = new Router();
 
-        // Ielādēt lokalizāciju
-        $this->lang = new Lang($config['app']['locale']);
+        // Ielādēt lokalizāciju (no sesijas, ja pieejama)
+        $locale = $_SESSION['locale'] ?? $config['app']['locale'];
+        $this->lang = new Lang($locale);
     }
 
     public static function getInstance($config = null) {
@@ -81,22 +82,17 @@ class App {
 
     public function run() {
         // Ielādēt maršrutus
-        require_once __DIR__ . '/../config/routes.php';
+        require_once ROOT_DIR . '/app/config/routes.php';
 
         // Dispatch
         $uri = $_SERVER['REQUEST_URI'];
         $method = $_SERVER['REQUEST_METHOD'];
 
-        // Noņemt /public/ prefixu no URI, ja tāds ir
-        // Tas ļauj strādāt gan ar, gan bez .htaccess redirect
-        if (strpos($uri, '/public/') === 0) {
-            $uri = substr($uri, 7); // Noņemt '/public/'
-        } elseif ($uri === '/public') {
-            $uri = '/';
-        }
-
         // Noņemt /index.php no URI
         $uri = str_replace('/index.php', '', $uri);
+
+        // Noņemt query string
+        $uri = strtok($uri, '?');
 
         try {
             $this->router->dispatch($uri, $method);
@@ -148,25 +144,14 @@ function view($name, $data = []) {
     require_once $viewFile;
 }
 
-function getBasePath() {
-    // Nosaka base path atkarībā no tā, kā lietotājs piekļūst
-    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-    if (strpos($scriptName, '/public/') !== false) {
-        return '/public';
-    }
-    return '';
-}
-
 function asset($path) {
-    // Assets ir pieejami caur symlink public/assets -> ../assets
-    $basePath = getBasePath();
-    return $basePath . '/assets/' . ltrim($path, '/');
+    // Vienkārši path uz assets direktoriju
+    return '/assets/' . ltrim($path, '/');
 }
 
 function url($path = '') {
-    // URL ar base path
-    $basePath = getBasePath();
-    return $basePath . '/' . ltrim($path, '/');
+    // Vienkārši relatīvs URL
+    return '/' . ltrim($path, '/');
 }
 
 function csrf_field() {

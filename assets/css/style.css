@@ -123,6 +123,35 @@ header {
     cursor: pointer;
 }
 
+/* ===== LANGUAGE SELECTOR ===== */
+.language-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 2rem;
+}
+
+.lang-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray);
+    border: 2px solid var(--light-gray);
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.lang-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.lang-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-color: var(--primary);
+    color: var(--white);
+}
+
 /* ===== BUTTONS ===== */
 .btn {
     display: inline-block;

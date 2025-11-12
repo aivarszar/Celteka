@@ -16,6 +16,19 @@
                     <a href="/"><?= lang('app.name') ?></a>
                 </div>
 
+                <!-- Language Selector -->
+                <div class="language-selector">
+                    <?php
+                    $currentLocale = app()->getLang()->getLocale();
+                    $languages = ['lv' => 'LV', 'en' => 'EN', 'ru' => 'RU', 'lt' => 'LT', 'ee' => 'EE'];
+                    ?>
+                    <?php foreach ($languages as $code => $label): ?>
+                        <a href="/lang/<?= $code ?>" class="lang-btn <?= $code === $currentLocale ? 'active' : '' ?>" title="<?= app()->getLang()->getLanguageName($code) ?>">
+                            <?= $label ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/"><?= lang('nav.home') ?></a></li>
                     <li><a href="/products"><?= lang('nav.products') ?></a></li>
