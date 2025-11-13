@@ -74,21 +74,41 @@ class Session {
 
     public static function verifyCsrfToken($token) {
         error_log("Session::verifyCsrfToken() - START");
+        error_log("Session::verifyCsrfToken() - Before getCsrfToken() call");
+
         $sessionToken = self::getCsrfToken();
+
+        error_log("Session::verifyCsrfToken() - After getCsrfToken() call");
         error_log("Session::verifyCsrfToken() - Session token: " . ($sessionToken ?? 'NULL'));
         error_log("Session::verifyCsrfToken() - Provided token: " . ($token ?? 'NULL'));
+        error_log("Session::verifyCsrfToken() - Session token length: " . (isset($sessionToken) ? strlen($sessionToken) : 'NULL'));
+        error_log("Session::verifyCsrfToken() - Provided token length: " . (isset($token) ? strlen($token) : 'NULL'));
 
         if ($sessionToken === null || $token === null) {
             error_log("Session::verifyCsrfToken() - One of tokens is NULL, returning false");
+            error_log("Session::verifyCsrfToken() - END (NULL token)");
             return false;
         }
 
+        error_log("Session::verifyCsrfToken() - Both tokens present, comparing");
+        error_log("Session::verifyCsrfToken() - About to call hash_equals()");
+
         try {
             $result = hash_equals($sessionToken, $token);
+
+            error_log("Session::verifyCsrfToken() - hash_equals() returned");
             error_log("Session::verifyCsrfToken() - hash_equals result: " . ($result ? 'TRUE' : 'FALSE'));
+            error_log("Session::verifyCsrfToken() - END (success)");
             return $result;
         } catch (Exception $e) {
             error_log("Session::verifyCsrfToken() - hash_equals EXCEPTION: " . $e->getMessage());
+            error_log("Session::verifyCsrfToken() - Exception trace: " . $e->getTraceAsString());
+            error_log("Session::verifyCsrfToken() - END (exception)");
+            return false;
+        } catch (Throwable $e) {
+            error_log("Session::verifyCsrfToken() - hash_equals THROWABLE: " . $e->getMessage());
+            error_log("Session::verifyCsrfToken() - Throwable trace: " . $e->getTraceAsString());
+            error_log("Session::verifyCsrfToken() - END (throwable)");
             return false;
         }
     }

@@ -11,35 +11,50 @@ class RequestHelper {
      */
     public static function verifyCsrf() {
         error_log("RequestHelper::verifyCsrf() - START");
+        error_log("RequestHelper::verifyCsrf() - REQUEST_METHOD: " . ($_SERVER['REQUEST_METHOD'] ?? 'NOT SET'));
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            error_log("RequestHelper::verifyCsrf() - Inside POST block");
             $token = $_POST['csrf_token'] ?? '';
             error_log("RequestHelper::verifyCsrf() - Token from POST: " . $token);
+            error_log("RequestHelper::verifyCsrf() - Token length: " . strlen($token));
 
             try {
+                error_log("RequestHelper::verifyCsrf() - BEFORE calling Session::verifyCsrfToken()");
+                error_log("RequestHelper::verifyCsrf() - About to call with token: " . substr($token, 0, 10) . "...");
+
                 $isValid = Session::verifyCsrfToken($token);
+
+                error_log("RequestHelper::verifyCsrf() - AFTER calling Session::verifyCsrfToken()");
                 error_log("RequestHelper::verifyCsrf() - Token validation result: " . ($isValid ? 'VALID' : 'INVALID'));
 
                 if (!$isValid) {
-                    error_log("RequestHelper::verifyCsrf() - CSRF validation FAILED, logging incident");
+                    error_log("RequestHelper::verifyCsrf() - CSRF validation FAILED, about to log incident");
 
+                    error_log("RequestHelper::verifyCsrf() - Calling SecurityHelper::logSecurityIncident()");
                     SecurityHelper::logSecurityIncident('csrf_token_invalid', [
                         'url' => $_SERVER['REQUEST_URI'] ?? '',
                         'method' => $_SERVER['REQUEST_METHOD'] ?? '',
                     ]);
+                    error_log("RequestHelper::verifyCsrf() - SecurityHelper::logSecurityIncident() completed");
 
-                    error_log("RequestHelper::verifyCsrf() - Setting flash error and redirecting");
+                    error_log("RequestHelper::verifyCsrf() - Setting flash error");
                     Session::flash('error', 'Nederīgs pieprasījums. Lūdzu mēģiniet vēlreiz.');
+                    error_log("RequestHelper::verifyCsrf() - Flash set, calling redirect()");
                     redirect($_SERVER['HTTP_REFERER'] ?? '/');
+                    error_log("RequestHelper::verifyCsrf() - After redirect() call");
                     exit;
                 }
 
                 error_log("RequestHelper::verifyCsrf() - CSRF verification SUCCESS");
             } catch (Exception $e) {
-                error_log("RequestHelper::verifyCsrf() - EXCEPTION: " . $e->getMessage());
+                error_log("RequestHelper::verifyCsrf() - EXCEPTION CAUGHT: " . $e->getMessage());
+                error_log("RequestHelper::verifyCsrf() - Exception class: " . get_class($e));
                 error_log("RequestHelper::verifyCsrf() - Trace: " . $e->getTraceAsString());
                 throw $e;
             }
+        } else {
+            error_log("RequestHelper::verifyCsrf() - Not POST, skipping verification");
         }
 
         error_log("RequestHelper::verifyCsrf() - END");
