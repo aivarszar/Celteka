@@ -40,6 +40,18 @@ CREATE TABLE IF NOT EXISTS user_meta (
     INDEX idx_user_key (user_id, meta_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Paroles atjaunošanas tokeni
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_token (token),
+    INDEX idx_expires (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Ģeogrāfiskās lokācijas
 CREATE TABLE IF NOT EXISTS locations (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

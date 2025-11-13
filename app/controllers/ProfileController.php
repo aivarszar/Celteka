@@ -134,18 +134,28 @@ class ProfileController {
             exit;
         }
 
-        // Atjaunot profilu
-        $data = [
-            'name' => $name,
+        // Atjaunot profilu - users tabulas lauki
+        $userData = [
+            'full_name' => $name,
             'email' => $email,
             'phone' => $phone ?: null,
-            'address' => $address ?: null,
-            'city' => $city ?: null,
-            'postal_code' => $postal_code ?: null,
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 
-        $result = $this->userModel->update($userId, $data);
+        $result = $this->userModel->update($userId, $userData);
+
+        // Saglabāt papildus laukus user_meta tabulā
+        if ($result) {
+            if (!empty($address)) {
+                $this->userModel->setMeta($userId, 'address', $address);
+            }
+            if (!empty($city)) {
+                $this->userModel->setMeta($userId, 'city', $city);
+            }
+            if (!empty($postal_code)) {
+                $this->userModel->setMeta($userId, 'postal_code', $postal_code);
+            }
+        }
 
         if ($result) {
             // Atjaunot sesijas datus - izmantojam pilnus datus no DB
