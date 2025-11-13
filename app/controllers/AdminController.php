@@ -1,0 +1,210 @@
+<?php
+/**
+ * AdminController
+ * Administratora paneļa funkcionalitāte
+ */
+
+class AdminController {
+    private $db;
+
+    public function __construct() {
+        $this->db = db();
+
+        // Pārbaudīt admin tiesības
+        if (!AuthHelper::isAdmin()) {
+            Session::flash('error', 'Piekļuve liegta. Nepieciešamas administratora tiesības.');
+            redirect('/');
+        }
+    }
+
+    /**
+     * Administratora paneļa galvenā lapa - Dashboard
+     */
+    public function index() {
+        // Iegūt platformas statistiku
+        $stats = $this->getPlatformStats();
+
+        view('admin/dashboard', [
+            'stats' => $stats,
+            'config' => config()
+        ]);
+    }
+
+    /**
+     * Lietotāju pārvaldība
+     */
+    public function users() {
+        // Iegūt visus lietotājus ar viņu lomām
+        $users = $this->db->fetchAll("
+            SELECT u.*, 
+                   GROUP_CONCAT(ura.role ORDER BY ura.role SEPARATOR ', ') as roles,
+                   COUNT(DISTINCT o_buy.id) as orders_as_buyer,
+                   COUNT(DISTINCT o_sell.id) as orders_as_seller,
+                   COUNT(DISTINCT p.id) as products_count
+            FROM users u
+            LEFT JOIN user_role_assignments ura ON u.id = ura.user_id
+            LEFT JOIN orders o_buy ON u.id = o_buy.buyer_id
+            LEFT JOIN orders o_sell ON u.id = o_sell.seller_id
+            LEFT JOIN products p ON u.id = p.seller_id
+            GROUP BY u.id
+            ORDER BY u.created_at DESC
+        ");
+
+        view('admin/users', [
+            'users' => $users,
+            'config' => config()
+        ]);
+    }
+
+    /**
+     * Lietotāja lomu pārvaldība
+     */
+    public function updateUserRoles($userId) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('/admin/users');
+        }
+
+        RequestHelper::verifyCsrf();
+
+        $roles = $_POST['roles'] ?? [];
+        $availableRoles = ['admin', 'seller', 'buyer'];
+
+        // Validēt lomas
+        foreach ($roles as $role) {
+            if (!in_array($role, $availableRoles)) {
+                Session::flash('error', 'Nederīga loma: ' . $role);
+                redirect('/admin/users');
+            }
+        }
+
+        try {
+            // Dzēst visas esošās lomas
+            $this->db->query("DELETE FROM user_role_assignments WHERE user_id = ?", [$userId]);
+
+            // Pievienot jaunās lomas
+            $currentUserId = AuthHelper::getUserId();
+            foreach ($roles as $role) {
+                $this->db->insert('user_role_assignments', [
+                    'user_id' => $userId,
+                    'role' => $role,
+                    'assigned_by' => $currentUserId,
+                    'assigned_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            Session::flash('success', 'Lietotāja lomas veiksmīgi atjauninātas');
+        } catch (Exception $e) {
+            error_log("Error updating user roles: " . $e->getMessage());
+            Session::flash('error', 'Kļūda atjauninot lomas');
+        }
+
+        redirect('/admin/users');
+    }
+
+    /**
+     * Produktu pārvaldība
+     */
+    public function products() {
+        $products = $this->db->fetchAll("
+            SELECT p.*, u.full_name as seller_name, c.name as category_name
+            FROM products p
+            LEFT JOIN users u ON p.seller_id = u.id
+            LEFT JOIN categories c ON p.category_id = c.id
+            ORDER BY p.created_at DESC
+            LIMIT 100
+        ");
+
+        view('admin/products', [
+            'products' => $products,
+            'config' => config()
+        ]);
+    }
+
+    /**
+     * Pasūtījumu pārvaldība
+     */
+    public function orders() {
+        $orders = $this->db->fetchAll("
+            SELECT o.*, 
+                   b.full_name as buyer_name,
+                   s.full_name as seller_name,
+                   COUNT(oi.id) as items_count
+            FROM orders o
+            LEFT JOIN users b ON o.buyer_id = b.id
+            LEFT JOIN users s ON o.seller_id = s.id
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            GROUP BY o.id
+            ORDER BY o.created_at DESC
+            LIMIT 100
+        ");
+
+        view('admin/orders', [
+            'orders' => $orders,
+            'config' => config()
+        ]);
+    }
+
+    /**
+     * Atsauksmju pārvaldība
+     */
+    public function reviews() {
+        $reviews = $this->db->fetchAll("
+            SELECT r.*, 
+                   reviewer.full_name as reviewer_name,
+                   reviewed.full_name as reviewed_name,
+                   o.order_number
+            FROM reviews r
+            LEFT JOIN users reviewer ON r.reviewer_id = reviewer.id
+            LEFT JOIN users reviewed ON r.reviewed_id = reviewed.id
+            LEFT JOIN orders o ON r.order_id = o.id
+            ORDER BY r.created_at DESC
+            LIMIT 100
+        ");
+
+        view('admin/reviews', [
+            'reviews' => $reviews,
+            'config' => config()
+        ]);
+    }
+
+    /**
+     * Iegūst platformas statistiku
+     */
+    private function getPlatformStats() {
+        $stats = [];
+
+        try {
+            $stats['total_users'] = $this->db->fetchColumn("SELECT COUNT(*) FROM users");
+            $stats['total_products'] = $this->db->fetchColumn("SELECT COUNT(*) FROM products WHERE is_active = 1");
+            $stats['total_orders'] = $this->db->fetchColumn("SELECT COUNT(*) FROM orders");
+            $stats['total_reviews'] = $this->db->fetchColumn("SELECT COUNT(*) FROM reviews");
+            
+            $stats['pending_orders'] = $this->db->fetchColumn("SELECT COUNT(*) FROM orders WHERE status = 'pending'");
+            $stats['completed_orders'] = $this->db->fetchColumn("SELECT COUNT(*) FROM orders WHERE status = 'completed'");
+            
+            $stats['total_revenue'] = $this->db->fetchColumn("SELECT SUM(total_amount) FROM orders WHERE status = 'completed'") ?? 0;
+            
+            $stats['admin_count'] = $this->db->fetchColumn("SELECT COUNT(DISTINCT user_id) FROM user_role_assignments WHERE role = 'admin'");
+            $stats['seller_count'] = $this->db->fetchColumn("SELECT COUNT(DISTINCT user_id) FROM user_role_assignments WHERE role = 'seller'");
+            $stats['buyer_count'] = $this->db->fetchColumn("SELECT COUNT(DISTINCT user_id) FROM user_role_assignments WHERE role = 'buyer'");
+
+            // Pēdējie reģistrētie lietotāji
+            $stats['recent_users'] = $this->db->fetchAll("SELECT id, full_name, email, created_at FROM users ORDER BY created_at DESC LIMIT 5");
+
+            // Pēdējie pasūtījumi
+            $stats['recent_orders'] = $this->db->fetchAll("
+                SELECT o.id, o.order_number, o.total_amount, o.status, o.created_at,
+                       b.full_name as buyer_name
+                FROM orders o
+                LEFT JOIN users b ON o.buyer_id = b.id
+                ORDER BY o.created_at DESC
+                LIMIT 5
+            ");
+
+        } catch (Exception $e) {
+            error_log("Error fetching admin stats: " . $e->getMessage());
+        }
+
+        return $stats;
+    }
+}
