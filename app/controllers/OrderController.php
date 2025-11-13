@@ -31,7 +31,7 @@ class OrderController {
         $user = $this->userModel->findById($userId);
 
         if (!$user) {
-            $_SESSION['error'] = Lang::get('user_not_found');
+            Session::flash('error', lang('messages.user_not_found'));
             header('Location: /');
             exit;
         }
@@ -66,14 +66,14 @@ class OrderController {
         $order = $this->orderModel->findById($id);
 
         if (!$order) {
-            $_SESSION['error'] = Lang::get('order_not_found');
+            Session::flash('error', lang('order.order_not_found'));
             header('Location: /orders');
             exit;
         }
 
         // Pārbaudīt vai lietotājs ir šī pasūtījuma dalībnieks
         if ($order['buyer_id'] != $userId && $order['seller_id'] != $userId) {
-            $_SESSION['error'] = Lang::get('access_denied');
+            Session::flash('error', lang('messages.access_denied'));
             header('Location: /orders');
             exit;
         }
@@ -106,21 +106,21 @@ class OrderController {
         $order = $this->orderModel->findById($id);
 
         if (!$order) {
-            Session::flash('error', Lang::get('order_not_found'));
+            Session::flash('error', lang('order.order_not_found'));
             header('Location: /orders');
             exit;
         }
 
         // Pārbaudīt vai lietotājs ir pasūtījuma pircējs
         if ($order['buyer_id'] != $userId) {
-            Session::flash('error', Lang::get('access_denied'));
+            Session::flash('error', lang('messages.access_denied'));
             header('Location: /orders');
             exit;
         }
 
         // Pārbaudīt vai pasūtījumu var atcelt
         if (!in_array($order['status'], ['pending', 'confirmed'])) {
-            Session::flash('error', Lang::get('cannot_cancel_order'));
+            Session::flash('error', lang('order.cannot_cancel_order'));
             header('Location: /order/' . $id);
             exit;
         }
@@ -129,9 +129,9 @@ class OrderController {
         $result = $this->orderModel->updateStatus($id, 'cancelled');
 
         if ($result) {
-            Session::flash('success', Lang::get('order_cancelled'));
+            Session::flash('success', lang('order.order_cancelled'));
         } else {
-            Session::flash('error', Lang::get('order_cancel_failed'));
+            Session::flash('error', lang('order.order_cancel_failed'));
         }
 
         header('Location: /order/' . $id);

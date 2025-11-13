@@ -88,7 +88,7 @@ class ProfileController {
         $user = $this->userModel->findById($userId);
 
         if (!$user) {
-            Session::flash('error', Lang::get('user_not_found'));
+            Session::flash('error', lang('messages.user_not_found'));
             header('Location: /');
             exit;
         }
@@ -104,18 +104,18 @@ class ProfileController {
 
         // Validācija
         if (empty($name)) {
-            $errors[] = Lang::get('name_required');
+            $errors[] = lang('messages.name_required');
         }
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = Lang::get('email_invalid');
+            $errors[] = lang('messages.email_invalid');
         }
 
         // Pārbaudīt vai e-pasts jau eksistē (izņemot pašreizējo lietotāju)
         if ($email !== $user['email']) {
             $existingUser = $this->userModel->findByEmail($email);
             if ($existingUser) {
-                $errors[] = Lang::get('email_exists');
+                $errors[] = lang('messages.email_exists');
             }
         }
 
@@ -154,9 +154,9 @@ class ProfileController {
             $userData['email'] = $email;
             Session::setUser($userData);
 
-            Session::flash('success', Lang::get('profile_updated'));
+            Session::flash('success', lang('messages.profile_updated'));
         } else {
-            Session::flash('error', Lang::get('profile_update_failed'));
+            Session::flash('error', lang('messages.profile_update_failed'));
         }
 
         header('Location: /profile');
@@ -200,7 +200,7 @@ class ProfileController {
         $user = $this->userModel->findById($userId);
 
         if (!$user) {
-            Session::flash('error', Lang::get('user_not_found'));
+            Session::flash('error', lang('messages.user_not_found'));
             header('Location: /');
             exit;
         }
@@ -212,19 +212,19 @@ class ProfileController {
 
         // Validācija
         if (empty($currentPassword)) {
-            $errors[] = Lang::get('current_password_required');
+            $errors[] = lang('messages.current_password_required');
         } elseif (!password_verify($currentPassword, $user['password_hash'])) {
-            $errors[] = Lang::get('current_password_incorrect');
+            $errors[] = lang('messages.current_password_incorrect');
         }
 
         if (empty($newPassword)) {
-            $errors[] = Lang::get('new_password_required');
+            $errors[] = lang('messages.new_password_required');
         } elseif (strlen($newPassword) < 6) {
-            $errors[] = Lang::get('password_min_length');
+            $errors[] = lang('messages.password_min_length');
         }
 
         if ($newPassword !== $confirmPassword) {
-            $errors[] = Lang::get('passwords_dont_match');
+            $errors[] = lang('messages.passwords_dont_match');
         }
 
         if (!empty($errors)) {
@@ -241,10 +241,10 @@ class ProfileController {
         ]);
 
         if ($result) {
-            Session::flash('success', Lang::get('password_changed'));
+            Session::flash('success', lang('messages.password_changed'));
             header('Location: /profile');
         } else {
-            Session::flash('error', Lang::get('password_change_failed'));
+            Session::flash('error', lang('messages.password_change_failed'));
             header('Location: /profile/change-password');
         }
         exit;

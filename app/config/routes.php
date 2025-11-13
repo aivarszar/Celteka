@@ -12,6 +12,11 @@ $router->get('/lang/{locale}', 'LanguageController@change', 'language.change');
 // Sākumlapa
 $router->get('/', 'HomeController@index', 'home');
 
+// Statiskās lapas
+$router->get('/about', 'PageController@about', 'about');
+$router->get('/contact', 'PageController@contact', 'contact');
+$router->post('/contact/submit', 'PageController@submitContact', 'contact.submit');
+
 // Autentifikācija
 $router->get('/login', 'AuthController@showLogin', 'login');
 $router->post('/login', 'AuthController@login');
