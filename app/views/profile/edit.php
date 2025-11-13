@@ -4,8 +4,8 @@ ob_start();
 
     <div class="container edit-profile-container">
         <div class="form-header">
-            <h1><?= Lang::get('edit_profile') ?></h1>
-            <a href="/profile" class="btn btn-secondary"><?= Lang::get('back_to_profile') ?></a>
+            <h1><?= lang('edit_profile') ?></h1>
+            <a href="/profile" class="btn btn-secondary"><?= lang('back_to_profile') ?></a>
         </div>
 
         <?php if (isset($_SESSION['errors'])): ?>
@@ -23,10 +23,10 @@ ob_start();
             <form action="/profile/update" method="POST" class="profile-form">
                 <?= csrf_field() ?>
                 <div class="form-section">
-                    <h2><?= Lang::get('personal_information') ?></h2>
+                    <h2><?= lang('personal_information') ?></h2>
 
                     <div class="form-group">
-                        <label for="name"><?= Lang::get('name') ?> <span class="required">*</span></label>
+                        <label for="name"><?= lang('name') ?> <span class="required">*</span></label>
                         <input
                             type="text"
                             id="name"
@@ -38,7 +38,7 @@ ob_start();
                     </div>
 
                     <div class="form-group">
-                        <label for="email"><?= Lang::get('email') ?> <span class="required">*</span></label>
+                        <label for="email"><?= lang('email') ?> <span class="required">*</span></label>
                         <input
                             type="email"
                             id="email"
@@ -50,7 +50,7 @@ ob_start();
                     </div>
 
                     <div class="form-group">
-                        <label for="phone"><?= Lang::get('phone') ?></label>
+                        <label for="phone"><?= lang('phone') ?></label>
                         <input
                             type="tel"
                             id="phone"
@@ -62,10 +62,10 @@ ob_start();
                 </div>
 
                 <div class="form-section">
-                    <h2><?= Lang::get('address_information') ?></h2>
+                    <h2><?= lang('address_information') ?></h2>
 
                     <div class="form-group">
-                        <label for="address"><?= Lang::get('address') ?></label>
+                        <label for="address"><?= lang('address') ?></label>
                         <input
                             type="text"
                             id="address"
@@ -77,7 +77,7 @@ ob_start();
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="city"><?= Lang::get('city') ?></label>
+                            <label for="city"><?= lang('city') ?></label>
                             <input
                                 type="text"
                                 id="city"
@@ -88,7 +88,7 @@ ob_start();
                         </div>
 
                         <div class="form-group">
-                            <label for="postal_code"><?= Lang::get('postal_code') ?></label>
+                            <label for="postal_code"><?= lang('postal_code') ?></label>
                             <input
                                 type="text"
                                 id="postal_code"
@@ -101,8 +101,8 @@ ob_start();
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><?= Lang::get('save_changes') ?></button>
-                    <a href="/profile" class="btn btn-outline"><?= Lang::get('cancel') ?></a>
+                    <button type="submit" class="btn btn-primary"><?= lang('save_changes') ?></button>
+                    <a href="/profile" class="btn btn-outline"><?= lang('cancel') ?></a>
                 </div>
             </form>
         </div>
@@ -237,6 +237,6 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-$title = Lang::get('edit_profile') . ' - ' . lang('app.name');
+$title = lang('edit_profile') . ' - ' . lang('app.name');
 require __DIR__ . '/../layout.php';
 ?>

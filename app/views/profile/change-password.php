@@ -4,8 +4,8 @@ ob_start();
 
     <div class="container change-password-container">
         <div class="form-header">
-            <h1><?= Lang::get('change_password') ?></h1>
-            <a href="/profile" class="btn btn-secondary"><?= Lang::get('back_to_profile') ?></a>
+            <h1><?= lang('change_password') ?></h1>
+            <a href="/profile" class="btn btn-secondary"><?= lang('back_to_profile') ?></a>
         </div>
 
         <?php if (isset($_SESSION['errors'])): ?>
@@ -36,13 +36,13 @@ ob_start();
                         <line x1="12" y1="16" x2="12.01" y2="16"></line>
                     </svg>
                     <div>
-                        <strong><?= Lang::get('security_notice') ?></strong>
-                        <p><?= Lang::get('password_security_tip') ?></p>
+                        <strong><?= lang('security_notice') ?></strong>
+                        <p><?= lang('password_security_tip') ?></p>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="current_password"><?= Lang::get('current_password') ?> <span class="required">*</span></label>
+                    <label for="current_password"><?= lang('current_password') ?> <span class="required">*</span></label>
                     <input
                         type="password"
                         id="current_password"
@@ -53,7 +53,7 @@ ob_start();
                 </div>
 
                 <div class="form-group">
-                    <label for="new_password"><?= Lang::get('new_password') ?> <span class="required">*</span></label>
+                    <label for="new_password"><?= lang('new_password') ?> <span class="required">*</span></label>
                     <input
                         type="password"
                         id="new_password"
@@ -62,11 +62,11 @@ ob_start();
                         minlength="6"
                         autocomplete="new-password"
                     >
-                    <small class="form-hint"><?= Lang::get('password_min_6_chars') ?></small>
+                    <small class="form-hint"><?= lang('password_min_6_chars') ?></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="confirm_password"><?= Lang::get('confirm_password') ?> <span class="required">*</span></label>
+                    <label for="confirm_password"><?= lang('confirm_password') ?> <span class="required">*</span></label>
                     <input
                         type="password"
                         id="confirm_password"
@@ -78,7 +78,7 @@ ob_start();
                 </div>
 
                 <div class="password-strength" id="passwordStrength" style="display: none;">
-                    <div class="strength-label"><?= Lang::get('password_strength') ?>:</div>
+                    <div class="strength-label"><?= lang('password_strength') ?>:</div>
                     <div class="strength-meter">
                         <div class="strength-meter-fill" id="strengthMeterFill"></div>
                     </div>
@@ -86,8 +86,8 @@ ob_start();
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><?= Lang::get('change_password') ?></button>
-                    <a href="/profile" class="btn btn-outline"><?= Lang::get('cancel') ?></a>
+                    <button type="submit" class="btn btn-primary"><?= lang('change_password') ?></button>
+                    <a href="/profile" class="btn btn-outline"><?= lang('cancel') ?></a>
                 </div>
             </form>
         </div>
@@ -317,19 +317,19 @@ ob_start();
 
             if (strength < 40) {
                 strengthFill.classList.add('strength-weak');
-                strengthText.textContent = '<?= Lang::get('weak') ?>';
+                strengthText.textContent = '<?= lang('weak') ?>';
                 strengthText.style.color = '#f44336';
             } else if (strength < 60) {
                 strengthFill.classList.add('strength-fair');
-                strengthText.textContent = '<?= Lang::get('fair') ?>';
+                strengthText.textContent = '<?= lang('fair') ?>';
                 strengthText.style.color = '#ff9800';
             } else if (strength < 80) {
                 strengthFill.classList.add('strength-good');
-                strengthText.textContent = '<?= Lang::get('good') ?>';
+                strengthText.textContent = '<?= lang('good') ?>';
                 strengthText.style.color = '#4CAF50';
             } else {
                 strengthFill.classList.add('strength-strong');
-                strengthText.textContent = '<?= Lang::get('strong') ?>';
+                strengthText.textContent = '<?= lang('strong') ?>';
                 strengthText.style.color = '#2196F3';
             }
         }
@@ -339,7 +339,7 @@ ob_start();
         form.addEventListener('submit', function(e) {
             if (newPasswordInput.value !== confirmPasswordInput.value) {
                 e.preventDefault();
-                alert('<?= Lang::get('passwords_dont_match') ?>');
+                alert('<?= lang('passwords_dont_match') ?>');
                 confirmPasswordInput.focus();
             }
         });
@@ -347,6 +347,6 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-$title = Lang::get('change_password') . ' - ' . lang('app.name');
+$title = lang('change_password') . ' - ' . lang('app.name');
 require __DIR__ . '/../layout.php';
 ?>

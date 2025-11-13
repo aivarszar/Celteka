@@ -4,7 +4,7 @@ ob_start();
 
 <div class="container orders-container">
     <div class="page-header">
-        <h1><?= Lang::get('orders') ?></h1>
+        <h1><?= lang('orders') ?></h1>
     </div>
 
     <?php if (empty($orders)): ?>
@@ -14,9 +14,9 @@ ob_start();
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
-            <h2><?= Lang::get('no_orders') ?></h2>
-            <p><?= Lang::get('no_orders_message') ?></p>
-            <a href="/products" class="btn btn-primary"><?= Lang::get('browse_products') ?></a>
+            <h2><?= lang('no_orders') ?></h2>
+            <p><?= lang('no_orders_message') ?></p>
+            <a href="/products" class="btn btn-primary"><?= lang('browse_products') ?></a>
         </div>
     <?php else: ?>
         <div class="orders-list">
@@ -24,12 +24,12 @@ ob_start();
                 <div class="order-card">
                     <div class="order-header">
                         <div class="order-number">
-                            <strong><?= Lang::get('order') ?> #<?= htmlspecialchars($order['id']) ?></strong>
+                            <strong><?= lang('order') ?> #<?= htmlspecialchars($order['id']) ?></strong>
                             <span class="order-date"><?= date('d.m.Y H:i', strtotime($order['created_at'])) ?></span>
                         </div>
                         <div class="order-status">
                             <span class="status-badge status-<?= htmlspecialchars($order['status']) ?>">
-                                <?= Lang::get('status_' . $order['status']) ?>
+                                <?= lang('status_' . $order['status']) ?>
                             </span>
                         </div>
                     </div>
@@ -40,20 +40,20 @@ ob_start();
                                 <?php if (!empty($order['product_title'])): ?>
                                     <?= htmlspecialchars($order['product_title']) ?>
                                     <?php if ($order['items_count'] > 1): ?>
-                                        <span class="items-badge">+<?= ($order['items_count'] - 1) ?> <?= Lang::get('more_items') ?></span>
+                                        <span class="items-badge">+<?= ($order['items_count'] - 1) ?> <?= lang('more_items') ?></span>
                                     <?php endif; ?>
                                 <?php else: ?>
-                                    <?= $order['items_count'] ?> <?= Lang::get('products') ?>
+                                    <?= $order['items_count'] ?> <?= lang('products') ?>
                                 <?php endif; ?>
                             </h3>
                             <div class="order-details">
                                 <?php if (!empty($order['buyer_name'])): ?>
-                                    <p><strong><?= Lang::get('buyer') ?>:</strong> <?= htmlspecialchars($order['buyer_name']) ?></p>
-                                    <p><strong><?= Lang::get('email') ?>:</strong> <?= htmlspecialchars($order['buyer_email']) ?></p>
+                                    <p><strong><?= lang('buyer') ?>:</strong> <?= htmlspecialchars($order['buyer_name']) ?></p>
+                                    <p><strong><?= lang('email') ?>:</strong> <?= htmlspecialchars($order['buyer_email']) ?></p>
                                 <?php elseif (!empty($order['seller_name'])): ?>
-                                    <p><strong><?= Lang::get('seller') ?>:</strong> <?= htmlspecialchars($order['seller_name']) ?></p>
+                                    <p><strong><?= lang('seller') ?>:</strong> <?= htmlspecialchars($order['seller_name']) ?></p>
                                 <?php endif; ?>
-                                <p><strong><?= Lang::get('items') ?>:</strong> <?= htmlspecialchars($order['items_count']) ?></p>
+                                <p><strong><?= lang('items') ?>:</strong> <?= htmlspecialchars($order['items_count']) ?></p>
                             </div>
                         </div>
 
@@ -64,7 +64,7 @@ ob_start();
 
                     <div class="order-footer">
                         <a href="/order/<?= $order['id'] ?>" class="btn btn-outline btn-sm">
-                            <?= Lang::get('view_details') ?>
+                            <?= lang('view_details') ?>
                         </a>
                     </div>
                 </div>
@@ -238,6 +238,6 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-$title = Lang::get('orders') . ' - ' . lang('app.name');
+$title = lang('orders') . ' - ' . lang('app.name');
 require __DIR__ . '/../layout.php';
 ?>

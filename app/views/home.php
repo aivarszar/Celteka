@@ -9,8 +9,8 @@ ob_start();
         <div class="dev-banner-content">
             <div class="dev-banner-icon">⚠️</div>
             <div class="dev-banner-text">
-                <strong><?= lang('dev.banner_title', 'Projekts izstrādes stadijā') ?></strong>
-                <p><?= lang('dev.banner_message', 'Šobrīd platforma tiek aktīvi izstrādāta un testēta. Dažas funkcijas var būt nepieejamas vai darboties nestabili.') ?></p>
+                <strong><?= lang('dev.banner_title') ?></strong>
+                <p><?= lang('dev.banner_message') ?></p>
             </div>
             <div class="dev-banner-status">
                 <span class="status-badge status-dev">BETA</span>

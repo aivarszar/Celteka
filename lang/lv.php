@@ -250,4 +250,9 @@ return [
         'unique' => 'Lauks :field jau eksistē',
         'confirmed' => 'Lauka :field apstiprinājums nesakrīt',
     ],
+
+    'dev' => [
+        'banner_title' => 'Projekts izstrādes stadijā',
+        'banner_message' => 'Šobrīd platforma tiek aktīvi izstrādāta un testēta. Dažas funkcijas var būt nepieejamas vai darboties nestabili.',
+    ],
 ];

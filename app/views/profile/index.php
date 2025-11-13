@@ -4,108 +4,108 @@ ob_start();
 
 <div class="container profile-container">
     <div class="profile-header">
-        <h1><?= Lang::get('my_profile') ?></h1>
+        <h1><?= lang('my_profile') ?></h1>
         <div class="profile-actions">
-            <a href="/profile/edit" class="btn btn-primary"><?= Lang::get('edit_profile') ?></a>
-            <a href="/profile/change-password" class="btn btn-secondary"><?= Lang::get('change_password') ?></a>
+            <a href="/profile/edit" class="btn btn-primary"><?= lang('edit_profile') ?></a>
+            <a href="/profile/change-password" class="btn btn-secondary"><?= lang('change_password') ?></a>
         </div>
     </div>
 
     <div class="profile-content">
         <div class="profile-info">
-            <h2><?= Lang::get('personal_information') ?></h2>
+            <h2><?= lang('personal_information') ?></h2>
 
             <div class="info-group">
-                <label><?= Lang::get('name') ?>:</label>
+                <label><?= lang('name') ?>:</label>
                 <p><?= htmlspecialchars($user['name']) ?></p>
             </div>
 
             <div class="info-group">
-                <label><?= Lang::get('email') ?>:</label>
+                <label><?= lang('email') ?>:</label>
                 <p><?= htmlspecialchars($user['email']) ?></p>
             </div>
 
             <div class="info-group">
-                <label><?= Lang::get('phone') ?>:</label>
-                <p><?= htmlspecialchars($user['phone'] ?? Lang::get('not_specified')) ?></p>
+                <label><?= lang('phone') ?>:</label>
+                <p><?= htmlspecialchars($user['phone'] ?? lang('not_specified')) ?></p>
             </div>
 
             <div class="info-group">
-                <label><?= Lang::get('role') ?>:</label>
+                <label><?= lang('role') ?>:</label>
                 <p>
                     <?php if ($user['role'] === 'seller'): ?>
-                        <span class="badge badge-seller"><?= Lang::get('seller') ?></span>
+                        <span class="badge badge-seller"><?= lang('seller') ?></span>
                     <?php else: ?>
-                        <span class="badge badge-buyer"><?= Lang::get('buyer') ?></span>
+                        <span class="badge badge-buyer"><?= lang('buyer') ?></span>
                     <?php endif; ?>
                 </p>
             </div>
 
             <?php if (!empty($user['address']) || !empty($user['city']) || !empty($user['postal_code'])): ?>
-                <h3><?= Lang::get('address_information') ?></h3>
+                <h3><?= lang('address_information') ?></h3>
 
                 <?php if (!empty($user['address'])): ?>
                     <div class="info-group">
-                        <label><?= Lang::get('address') ?>:</label>
+                        <label><?= lang('address') ?>:</label>
                         <p><?= htmlspecialchars($user['address']) ?></p>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($user['city'])): ?>
                     <div class="info-group">
-                        <label><?= Lang::get('city') ?>:</label>
+                        <label><?= lang('city') ?>:</label>
                         <p><?= htmlspecialchars($user['city']) ?></p>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($user['postal_code'])): ?>
                     <div class="info-group">
-                        <label><?= Lang::get('postal_code') ?>:</label>
+                        <label><?= lang('postal_code') ?>:</label>
                         <p><?= htmlspecialchars($user['postal_code']) ?></p>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
 
             <div class="info-group">
-                <label><?= Lang::get('member_since') ?>:</label>
+                <label><?= lang('member_since') ?>:</label>
                 <p><?= date('d.m.Y', strtotime($user['created_at'])) ?></p>
             </div>
         </div>
 
         <div class="profile-stats">
-            <h2><?= Lang::get('statistics') ?></h2>
+            <h2><?= lang('statistics') ?></h2>
 
             <div class="stats-grid">
                 <?php if ($user['role'] === 'seller'): ?>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['products_count'] ?></div>
-                        <div class="stat-label"><?= Lang::get('products') ?></div>
+                        <div class="stat-label"><?= lang('products') ?></div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['orders_count'] ?></div>
-                        <div class="stat-label"><?= Lang::get('sales') ?></div>
+                        <div class="stat-label"><?= lang('sales') ?></div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['reviews_count'] ?></div>
-                        <div class="stat-label"><?= Lang::get('reviews') ?></div>
+                        <div class="stat-label"><?= lang('reviews') ?></div>
                     </div>
                 <?php else: ?>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['orders_count'] ?></div>
-                        <div class="stat-label"><?= Lang::get('orders') ?></div>
+                        <div class="stat-label"><?= lang('orders') ?></div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['reviews_count'] ?></div>
-                        <div class="stat-label"><?= Lang::get('reviews') ?></div>
+                        <div class="stat-label"><?= lang('reviews') ?></div>
                     </div>
                 <?php endif; ?>
             </div>
 
             <?php if ($user['role'] === 'seller'): ?>
                 <div class="quick-actions">
-                    <h3><?= Lang::get('quick_actions') ?></h3>
-                    <a href="/seller/products" class="btn btn-outline"><?= Lang::get('my_products') ?></a>
-                    <a href="/seller/products/create" class="btn btn-outline"><?= Lang::get('add_product') ?></a>
+                    <h3><?= lang('quick_actions') ?></h3>
+                    <a href="/seller/products" class="btn btn-outline"><?= lang('my_products') ?></a>
+                    <a href="/seller/products/create" class="btn btn-outline"><?= lang('add_product') ?></a>
                 </div>
             <?php endif; ?>
         </div>
@@ -235,6 +235,6 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-$title = Lang::get('my_profile') . ' - ' . lang('app.name');
+$title = lang('my_profile') . ' - ' . lang('app.name');
 require __DIR__ . '/../layout.php';
 ?>
