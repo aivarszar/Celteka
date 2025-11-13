@@ -10,20 +10,39 @@ class RequestHelper {
      * Izmet error, ja token nav derīgs
      */
     public static function verifyCsrf() {
+        error_log("RequestHelper::verifyCsrf() - START");
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['csrf_token'] ?? '';
+            error_log("RequestHelper::verifyCsrf() - Token from POST: " . $token);
 
-            if (!Session::verifyCsrfToken($token)) {
-                SecurityHelper::logSecurityIncident('csrf_token_invalid', [
-                    'url' => $_SERVER['REQUEST_URI'] ?? '',
-                    'method' => $_SERVER['REQUEST_METHOD'] ?? '',
-                ]);
+            try {
+                $isValid = Session::verifyCsrfToken($token);
+                error_log("RequestHelper::verifyCsrf() - Token validation result: " . ($isValid ? 'VALID' : 'INVALID'));
 
-                Session::flash('error', 'Nederīgs pieprasījums. Lūdzu mēģiniet vēlreiz.');
-                redirect($_SERVER['HTTP_REFERER'] ?? '/');
-                exit;
+                if (!$isValid) {
+                    error_log("RequestHelper::verifyCsrf() - CSRF validation FAILED, logging incident");
+
+                    SecurityHelper::logSecurityIncident('csrf_token_invalid', [
+                        'url' => $_SERVER['REQUEST_URI'] ?? '',
+                        'method' => $_SERVER['REQUEST_METHOD'] ?? '',
+                    ]);
+
+                    error_log("RequestHelper::verifyCsrf() - Setting flash error and redirecting");
+                    Session::flash('error', 'Nederīgs pieprasījums. Lūdzu mēģiniet vēlreiz.');
+                    redirect($_SERVER['HTTP_REFERER'] ?? '/');
+                    exit;
+                }
+
+                error_log("RequestHelper::verifyCsrf() - CSRF verification SUCCESS");
+            } catch (Exception $e) {
+                error_log("RequestHelper::verifyCsrf() - EXCEPTION: " . $e->getMessage());
+                error_log("RequestHelper::verifyCsrf() - Trace: " . $e->getTraceAsString());
+                throw $e;
             }
         }
+
+        error_log("RequestHelper::verifyCsrf() - END");
     }
 
     /**
