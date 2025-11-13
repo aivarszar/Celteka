@@ -28,6 +28,9 @@
 
                 function isActive($path) {
                     global $currentPath;
+                    // Debug: Log to browser console
+                    echo "<script>console.log('isActive check: path=" . addslashes($path) . ", currentPath=" . addslashes($currentPath) . "');</script>";
+
                     // Eksaktais match sākumlapai
                     if ($path === '/' && $currentPath === '') {
                         return 'active';
@@ -39,7 +42,10 @@
                     // Remove trailing slash from path
                     $path = rtrim($path, '/');
                     // Check if current path starts with the given path
-                    return (strpos($currentPath, $path) === 0) ? 'active' : '';
+                    $isActive = (strpos($currentPath, $path) === 0);
+
+                    // Return active class with debug symbol
+                    return $isActive ? 'active debug-active' : '';
                 }
                 ?>
 
@@ -206,6 +212,23 @@
 
     .logout-btn:hover {
         transform: scale(1.1);
+    }
+
+    /* Active Menu Styling with Debug Indicator */
+    .nav-menu a.active,
+    .nav-menu a.debug-active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        position: relative;
+    }
+
+    /* Debug indicator - visible symbol */
+    .nav-menu a.debug-active::before {
+        content: "✓ ";
+        font-weight: bold;
+        color: #43e97b;
     }
 
     @media (max-width: 768px) {

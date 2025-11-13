@@ -90,29 +90,43 @@ class ProfileController {
     public function update() {
         error_log("=== ProfileController::update() START ===");
 
-        // Pārbaudīt vai lietotājs ir autorizēts
-        if (!AuthHelper::isLoggedIn()) {
-            error_log("ProfileController::update() - User not logged in");
-            header('Location: /login');
-            exit;
-        }
-        error_log("ProfileController::update() - User is logged in");
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            error_log("ProfileController::update() - Not POST request");
-            header('Location: /profile');
-            exit;
-        }
-        error_log("ProfileController::update() - POST request confirmed");
-
-        // CSRF verifikācija
         try {
-            error_log("ProfileController::update() - Verifying CSRF");
+            // Pārbaudīt vai lietotājs ir autorizēts
+            if (!AuthHelper::isLoggedIn()) {
+                error_log("ProfileController::update() - User not logged in");
+                header('Location: /login');
+                exit;
+            }
+            error_log("ProfileController::update() - User is logged in");
+
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                error_log("ProfileController::update() - Not POST request");
+                header('Location: /profile');
+                exit;
+            }
+            error_log("ProfileController::update() - POST request confirmed");
+
+            // CSRF verifikācija
+            error_log("ProfileController::update() - About to verify CSRF");
+            error_log("ProfileController::update() - POST data: " . json_encode($_POST));
+            error_log("ProfileController::update() - SESSION data: " . json_encode($_SESSION ?? []));
+
+            if (!isset($_POST['csrf_token'])) {
+                error_log("ProfileController::update() - CSRF token missing from POST");
+                Session::flash('error', 'CSRF token missing');
+                header('Location: /profile/edit');
+                exit;
+            }
+            error_log("ProfileController::update() - CSRF token in POST: " . $_POST['csrf_token']);
+
             RequestHelper::verifyCsrf();
-            error_log("ProfileController::update() - CSRF verified");
+            error_log("ProfileController::update() - CSRF verified successfully");
         } catch (Exception $e) {
-            error_log("ProfileController::update() - CSRF verification failed: " . $e->getMessage());
-            throw $e;
+            error_log("ProfileController::update() - FATAL ERROR: " . $e->getMessage());
+            error_log("ProfileController::update() - Error trace: " . $e->getTraceAsString());
+            Session::flash('error', 'System error: ' . $e->getMessage());
+            header('Location: /profile/edit');
+            exit;
         }
 
         $userId = AuthHelper::getUserId();
