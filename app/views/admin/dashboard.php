@@ -81,6 +81,10 @@
                 <span class="action-icon">⭐</span>
                 <span class="action-label">Pārvaldīt atsauksmes</span>
             </a>
+            <a href="/admin/migrate" class="action-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <span class="action-icon">🔄</span>
+                <span class="action-label">Lomu migrācija</span>
+            </a>
         </div>
     </div>
 

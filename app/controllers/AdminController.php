@@ -207,4 +207,115 @@ class AdminController {
 
         return $stats;
     }
+
+    /**
+     * Migrācijas lapa - lietotāju lomu migrācija
+     */
+    public function migrate() {
+        view('admin/migrate', [
+            'config' => config()
+        ]);
+    }
+
+    /**
+     * Izpilda lietotāju lomu migrāciju
+     */
+    public function runMigration() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('/admin/migrate');
+        }
+
+        RequestHelper::verifyCsrf();
+
+        $results = [
+            'migrated' => [],
+            'skipped' => [],
+            'errors' => []
+        ];
+
+        try {
+            // Iegūt visus lietotājus ar role_id
+            $users = $this->db->fetchAll("
+                SELECT id, full_name, email, role_id
+                FROM users
+                WHERE role_id IS NOT NULL
+                ORDER BY id
+            ");
+
+            if (empty($users)) {
+                Session::flash('info', 'Nav lietotāju ar role_id. Migrācija nav nepieciešama.');
+                redirect('/admin/migrate');
+            }
+
+            // Lomu kartējums
+            $roleMapping = [
+                1 => 'buyer',
+                2 => 'seller',
+                3 => 'admin'
+            ];
+
+            foreach ($users as $user) {
+                $userId = $user['id'];
+                $roleId = $user['role_id'];
+                $role = $roleMapping[$roleId] ?? null;
+
+                if (!$role) {
+                    $results['errors'][] = "Lietotājs ID {$userId} ({$user['email']}) - nezināms role_id: {$roleId}";
+                    continue;
+                }
+
+                // Pārbaudīt, vai loma jau eksistē
+                $exists = $this->db->fetchColumn(
+                    "SELECT COUNT(*) FROM user_role_assignments WHERE user_id = ? AND role = ?",
+                    [$userId, $role]
+                );
+
+                if ($exists > 0) {
+                    $results['skipped'][] = "Lietotājs {$user['email']} - loma '{$role}' jau eksistē";
+                    continue;
+                }
+
+                // Pievienot lomu
+                try {
+                    $this->db->insert('user_role_assignments', [
+                        'user_id' => $userId,
+                        'role' => $role,
+                        'assigned_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $results['migrated'][] = "Lietotājs {$user['email']} → loma '{$role}'";
+                } catch (Exception $e) {
+                    $results['errors'][] = "Lietotājs {$user['email']} - " . $e->getMessage();
+                }
+            }
+
+            // Pārbaudīt pirmā lietotāja admin lomu
+            $firstUser = $this->db->fetchOne("SELECT id, full_name, email FROM users ORDER BY id LIMIT 1");
+            if ($firstUser) {
+                $hasAdmin = $this->db->fetchColumn(
+                    "SELECT COUNT(*) FROM user_role_assignments WHERE user_id = ? AND role = 'admin'",
+                    [$firstUser['id']]
+                );
+
+                if ($hasAdmin == 0) {
+                    $this->db->insert('user_role_assignments', [
+                        'user_id' => $firstUser['id'],
+                        'role' => 'admin',
+                        'assigned_at' => date('Y-m-d H:i:s')
+                    ]);
+                    $results['migrated'][] = "Pirmajam lietotājam {$firstUser['email']} piešķirta admin loma";
+                }
+            }
+
+            // Saglabāt rezultātus sesijā
+            Session::set('migration_results', $results);
+            Session::flash('success', 'Migrācija pabeigta!');
+
+        } catch (Exception $e) {
+            error_log("Migration error: " . $e->getMessage());
+            Session::flash('error', 'Migrācijas kļūda: ' . $e->getMessage());
+        }
+
+        redirect('/admin/migrate');
+    }
 }

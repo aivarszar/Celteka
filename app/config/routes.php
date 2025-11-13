@@ -77,6 +77,8 @@ $router->get('/admin/categories', 'AdminController@categories', 'admin.categorie
 $router->post('/admin/categories', 'AdminController@storeCategory');
 $router->get('/admin/settings', 'AdminController@settings', 'admin.settings');
 $router->post('/admin/settings', 'AdminController@saveSettings');
+$router->get('/admin/migrate', 'AdminController@migrate', 'admin.migrate');
+$router->post('/admin/migrate/run', 'AdminController@runMigration', 'admin.migrate.run');
 
 // Landing pages (tiešās saites)
 $router->get('/l/{slug}', 'LandingController@show', 'landing');
