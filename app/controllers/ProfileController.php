@@ -4,6 +4,9 @@
  * Lietotājs var skatīt un rediģēt savu profilu
  */
 
+require_once __DIR__ . '/../helpers/RequestHelper.php';
+require_once __DIR__ . '/../helpers/AuthHelper.php';
+
 class ProfileController {
     private $db;
     private $userModel;
