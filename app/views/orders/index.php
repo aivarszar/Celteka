@@ -7,6 +7,61 @@ ob_start();
         <h1><?= lang('orders') ?></h1>
     </div>
 
+    <?php
+    // Show sales/inventory dashboard for sellers
+    if (isset($user) && $user['role'] === 'seller' && !empty($orders)):
+        // Calculate statistics
+        $totalSales = 0;
+        $completedOrders = 0;
+        $pendingOrders = 0;
+        $totalRevenue = 0;
+
+        foreach ($orders as $order) {
+            $totalSales++;
+            if ($order['status'] === 'completed') {
+                $completedOrders++;
+                $totalRevenue += $order['total_amount'];
+            }
+            if (in_array($order['status'], ['pending', 'confirmed'])) {
+                $pendingOrders++;
+            }
+        }
+    ?>
+        <div class="seller-dashboard">
+            <h2><?= lang('order.sales_overview') ?></h2>
+            <div class="dashboard-stats">
+                <div class="stat-box">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-content">
+                        <div class="stat-value"><?= $totalSales ?></div>
+                        <div class="stat-label"><?= lang('order.total_orders') ?></div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value"><?= $completedOrders ?></div>
+                        <div class="stat-label"><?= lang('order.completed_orders') ?></div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-content">
+                        <div class="stat-value"><?= $pendingOrders ?></div>
+                        <div class="stat-label"><?= lang('order.pending_orders') ?></div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content">
+                        <div class="stat-value">€<?= number_format($totalRevenue, 2) ?></div>
+                        <div class="stat-label"><?= lang('order.total_revenue') ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <?php if (empty($orders)): ?>
         <div class="empty-state">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -75,7 +130,7 @@ ob_start();
 
 <style>
     .orders-container {
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 2rem auto;
         padding: 0 1rem;
     }
@@ -84,6 +139,71 @@ ob_start();
         margin-bottom: 2rem;
         padding-bottom: 1rem;
         border-bottom: 2px solid #e0e0e0;
+    }
+
+    /* Seller Dashboard */
+    .seller-dashboard {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .seller-dashboard h2 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-box {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .stat-box:nth-child(2) {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .stat-box:nth-child(3) {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .stat-box:nth-child(4) {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.9;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        opacity: 0.9;
     }
 
     .empty-state {

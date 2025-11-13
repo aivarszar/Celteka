@@ -127,6 +127,11 @@ return [
         'cannot_cancel_order' => 'Šo pasūtījumu nevar atcelt',
         'order_cancelled' => 'Pasūtījums veiksmīgi atcelts',
         'order_cancel_failed' => 'Neizdevās atcelt pasūtījumu',
+        'sales_overview' => 'Pārdošanas pārskats',
+        'total_orders' => 'Kopā pasūtījumi',
+        'completed_orders' => 'Pabeigti pasūtījumi',
+        'pending_orders' => 'Gaida apstrādi',
+        'total_revenue' => 'Kopējie ieņēmumi',
     ],
 
     'review' => [
