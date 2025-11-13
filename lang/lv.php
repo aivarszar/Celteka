@@ -215,8 +215,6 @@ return [
     'common' => [
         'active' => 'Aktīvs',
         'inactive' => 'Neaktīvs',
-
-    'common' => [
         'save' => 'Saglabāt',
         'cancel' => 'Atcelt',
         'delete' => 'Dzēst',
