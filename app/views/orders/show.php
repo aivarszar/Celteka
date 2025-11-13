@@ -99,6 +99,80 @@ ob_start();
                 </form>
             </div>
         <?php endif; ?>
+
+        <?php
+        // Parādīt atsauksmju sadaļu, ja pasūtījums ir pabeigts
+        if ($order['status'] === 'completed'):
+            $userId = AuthHelper::getUserId();
+
+            // Noteikt, vai lietotājs ir pircējs vai pārdevējs
+            $isBuyer = ($order['buyer_id'] == $userId);
+            $reviewType = $isBuyer ? 'buyer_to_seller' : 'seller_to_buyer';
+            $reviewedName = $isBuyer ? $order['seller_name'] : $order['buyer_name'];
+
+            // Pārbaudīt vai atsauksme jau eksistē
+            require_once ROOT_DIR . '/app/controllers/ReviewController.php';
+            $reviewController = new ReviewController();
+            $existingReview = db()->fetch(
+                "SELECT * FROM reviews WHERE order_id = :order_id AND reviewer_id = :reviewer_id AND review_type = :review_type",
+                [
+                    'order_id' => $order['id'],
+                    'reviewer_id' => $userId,
+                    'review_type' => $reviewType
+                ]
+            );
+        ?>
+            <div class="detail-section review-section">
+                <h2><?= lang('review.leave_review') ?></h2>
+
+                <?php if ($existingReview): ?>
+                    <div class="review-submitted">
+                        <div class="alert alert-success">
+                            <strong><?= lang('review.already_submitted') ?></strong>
+                        </div>
+                        <div class="existing-review">
+                            <div class="review-rating">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <span class="star <?= $i <= $existingReview['rating'] ? 'filled' : '' ?>">★</span>
+                                <?php endfor; ?>
+                            </div>
+                            <p class="review-comment"><?= e($existingReview['comment']) ?></p>
+                            <p class="review-date"><?= date('d.m.Y H:i', strtotime($existingReview['created_at'])) ?></p>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <p><?= lang('review.rate_experience') ?> <strong><?= e($reviewedName) ?></strong></p>
+
+                    <form action="/review/order/<?= $order['id'] ?>" method="POST" class="review-form">
+                        <?= csrf_field() ?>
+
+                        <div class="form-group">
+                            <label for="rating"><?= lang('review.rating') ?> <span class="required">*</span></label>
+                            <div class="star-rating">
+                                <?php for ($i = 5; $i >= 1; $i--): ?>
+                                    <input type="radio" name="rating" id="star<?= $i ?>" value="<?= $i ?>" required>
+                                    <label for="star<?= $i ?>" title="<?= $i ?> <?= lang('review.stars') ?>">★</label>
+                                <?php endfor; ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="comment"><?= lang('review.comment') ?> <span class="required">*</span></label>
+                            <textarea
+                                name="comment"
+                                id="comment"
+                                rows="4"
+                                required
+                                maxlength="1000"
+                                placeholder="<?= lang('review.comment_placeholder') ?>"
+                            ></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"><?= lang('review.submit') ?></button>
+                    </form>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -241,6 +315,116 @@ ob_start();
         padding: 2rem;
         background: #f5f5f5;
         text-align: right;
+    }
+
+    /* Review Section */
+    .review-section {
+        background: #f9f9f9;
+    }
+
+    .review-submitted {
+        padding: 1rem;
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .existing-review {
+        padding: 1rem;
+        background: white;
+        border-radius: 4px;
+    }
+
+    .review-rating {
+        margin-bottom: 1rem;
+    }
+
+    .review-rating .star {
+        font-size: 1.5rem;
+        color: #ddd;
+    }
+
+    .review-rating .star.filled {
+        color: #ffc107;
+    }
+
+    .review-comment {
+        color: #333;
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+    }
+
+    .review-date {
+        color: #999;
+        font-size: 0.875rem;
+    }
+
+    .review-form {
+        max-width: 600px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 0.25rem;
+    }
+
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+
+    .star-rating label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .star-rating input[type="radio"]:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #ffc107;
+    }
+
+    .review-form textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 1rem;
+        resize: vertical;
+    }
+
+    .review-form textarea:focus {
+        outline: none;
+        border-color: #2196F3;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
     }
 
     @media (max-width: 768px) {

@@ -41,9 +41,15 @@ class ProfileController {
         // Iegūt lietotāja statistiku
         $stats = $this->getUserStats($userId, $user['role']);
 
+        // Iegūt lietotāja atsauksmes
+        require_once ROOT_DIR . '/app/controllers/ReviewController.php';
+        $reviewController = new ReviewController();
+        $reviews = $reviewController->getUserReviews($userId);
+
         view('profile/index', [
             'user' => $user,
             'stats' => $stats,
+            'reviews' => $reviews,
             'config' => config()
         ]);
     }
