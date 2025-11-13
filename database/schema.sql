@@ -40,6 +40,20 @@ CREATE TABLE IF NOT EXISTS user_meta (
     INDEX idx_user_key (user_id, meta_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Vairāku lomu piešķiršana lietotājiem (multi-role support)
+CREATE TABLE IF NOT EXISTS user_role_assignments (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    assigned_by INT UNSIGNED NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_by) REFERENCES users(id) ON DELETE SET NULL,
+    UNIQUE KEY unique_user_role (user_id, role),
+    INDEX idx_user (user_id),
+    INDEX idx_role (role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Paroles atjaunošanas tokeni
 CREATE TABLE IF NOT EXISTS password_resets (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

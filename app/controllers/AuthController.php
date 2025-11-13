@@ -135,6 +135,28 @@ class AuthController {
             'is_active' => true,
         ]);
 
+        // Piešķirt lomu caur user_role_assignments (multi-role atbalsts)
+        try {
+            db()->insert('user_role_assignments', [
+                'user_id' => $userId,
+                'role' => $role,
+                'assigned_at' => date('Y-m-d H:i:s')
+            ]);
+
+            // Pārbaudīt vai tas ir pirmais lietotājs - ja jā, piešķirt admin lomu
+            $userCount = db()->fetchColumn("SELECT COUNT(*) FROM users");
+            if ($userCount == 1) {
+                db()->insert('user_role_assignments', [
+                    'user_id' => $userId,
+                    'role' => 'admin',
+                    'assigned_at' => date('Y-m-d H:i:s')
+                ]);
+                error_log("First user registered - admin role granted to user ID: " . $userId);
+            }
+        } catch (Exception $e) {
+            error_log("Error assigning roles: " . $e->getMessage());
+        }
+
         Session::flash('success', lang('messages.register_success'));
         redirect('/login');
     }
