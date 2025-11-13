@@ -69,7 +69,7 @@
 
         <?php if ($error = Session::flash('error')): ?>
             <div class="container mt-3">
-                <div class="alert alert-error"><?= $error ?></div>
+                <div class="alert alert-error"><?= e($error) ?></div>
             </div>
         <?php endif; ?>
 

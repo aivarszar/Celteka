@@ -99,25 +99,28 @@ class OrderController {
             exit;
         }
 
+        // CSRF verifikācija
+        RequestHelper::verifyCsrf();
+
         $userId = AuthHelper::getUserId();
         $order = $this->orderModel->findById($id);
 
         if (!$order) {
-            $_SESSION['error'] = Lang::get('order_not_found');
+            Session::flash('error', Lang::get('order_not_found'));
             header('Location: /orders');
             exit;
         }
 
         // Pārbaudīt vai lietotājs ir pasūtījuma pircējs
         if ($order['buyer_id'] != $userId) {
-            $_SESSION['error'] = Lang::get('access_denied');
+            Session::flash('error', Lang::get('access_denied'));
             header('Location: /orders');
             exit;
         }
 
         // Pārbaudīt vai pasūtījumu var atcelt
         if (!in_array($order['status'], ['pending', 'confirmed'])) {
-            $_SESSION['error'] = Lang::get('cannot_cancel_order');
+            Session::flash('error', Lang::get('cannot_cancel_order'));
             header('Location: /order/' . $id);
             exit;
         }
@@ -126,9 +129,9 @@ class OrderController {
         $result = $this->orderModel->updateStatus($id, 'cancelled');
 
         if ($result) {
-            $_SESSION['success'] = Lang::get('order_cancelled');
+            Session::flash('success', Lang::get('order_cancelled'));
         } else {
-            $_SESSION['error'] = Lang::get('order_cancel_failed');
+            Session::flash('error', Lang::get('order_cancel_failed'));
         }
 
         header('Location: /order/' . $id);

@@ -28,6 +28,7 @@
 
         <div class="form-container">
             <form action="/profile/update" method="POST" class="profile-form">
+                <?= csrf_field() ?>
                 <div class="form-section">
                     <h2><?= Lang::get('personal_information') ?></h2>
 

@@ -81,11 +81,14 @@ class ProfileController {
             exit;
         }
 
+        // CSRF verifikācija
+        RequestHelper::verifyCsrf();
+
         $userId = AuthHelper::getUserId();
         $user = $this->userModel->findById($userId);
 
         if (!$user) {
-            $_SESSION['error'] = Lang::get('user_not_found');
+            Session::flash('error', Lang::get('user_not_found'));
             header('Location: /');
             exit;
         }
@@ -117,8 +120,16 @@ class ProfileController {
         }
 
         if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
-            $_SESSION['old_input'] = $_POST;
+            Session::flash('errors', $errors);
+            // Saglabāt tikai nepieciešamos laukus, nevis visu $_POST
+            Session::set('old_input', [
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'address' => $address,
+                'city' => $city,
+                'postal_code' => $postal_code
+            ]);
             header('Location: /profile/edit');
             exit;
         }
@@ -138,12 +149,14 @@ class ProfileController {
 
         if ($result) {
             // Atjaunot sesijas datus
-            $_SESSION['user']['name'] = $name;
-            $_SESSION['user']['email'] = $email;
+            $userData = Session::getUser();
+            $userData['name'] = $name;
+            $userData['email'] = $email;
+            Session::setUser($userData);
 
-            $_SESSION['success'] = Lang::get('profile_updated');
+            Session::flash('success', Lang::get('profile_updated'));
         } else {
-            $_SESSION['error'] = Lang::get('profile_update_failed');
+            Session::flash('error', Lang::get('profile_update_failed'));
         }
 
         header('Location: /profile');
@@ -180,11 +193,14 @@ class ProfileController {
             exit;
         }
 
+        // CSRF verifikācija
+        RequestHelper::verifyCsrf();
+
         $userId = AuthHelper::getUserId();
         $user = $this->userModel->findById($userId);
 
         if (!$user) {
-            $_SESSION['error'] = Lang::get('user_not_found');
+            Session::flash('error', Lang::get('user_not_found'));
             header('Location: /');
             exit;
         }
@@ -197,7 +213,7 @@ class ProfileController {
         // Validācija
         if (empty($currentPassword)) {
             $errors[] = Lang::get('current_password_required');
-        } elseif (!password_verify($currentPassword, $user['password'])) {
+        } elseif (!password_verify($currentPassword, $user['password_hash'])) {
             $errors[] = Lang::get('current_password_incorrect');
         }
 
@@ -212,7 +228,7 @@ class ProfileController {
         }
 
         if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
+            Session::flash('errors', $errors);
             header('Location: /profile/change-password');
             exit;
         }
@@ -220,15 +236,15 @@ class ProfileController {
         // Atjaunot paroli
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         $result = $this->userModel->update($userId, [
-            'password' => $hashedPassword,
+            'password_hash' => $hashedPassword,
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
         if ($result) {
-            $_SESSION['success'] = Lang::get('password_changed');
+            Session::flash('success', Lang::get('password_changed'));
             header('Location: /profile');
         } else {
-            $_SESSION['error'] = Lang::get('password_change_failed');
+            Session::flash('error', Lang::get('password_change_failed'));
             header('Location: /profile/change-password');
         }
         exit;

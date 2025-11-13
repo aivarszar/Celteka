@@ -115,6 +115,7 @@
             <?php if ($order['status'] === 'pending' || $order['status'] === 'confirmed'): ?>
                 <div class="order-actions">
                     <form action="/order/<?= $order['id'] ?>/cancel" method="POST" onsubmit="return confirm('<?= Lang::get('confirm_cancel_order') ?>');">
+                        <?= csrf_field() ?>
                         <button type="submit" class="btn btn-danger"><?= Lang::get('cancel_order') ?></button>
                     </form>
                 </div>
