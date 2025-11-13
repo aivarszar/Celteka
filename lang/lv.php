@@ -76,6 +76,13 @@ return [
         'stock_help' => 'Atstājiet 0, ja nav noliktavā',
         'current_images' => 'Pašreizējie attēli',
         'primary_image' => 'Galvenais',
+        'all_types' => 'Visi tipi',
+        'products' => 'Produkti',
+        'services' => 'Pakalpojumi',
+        'unique_services' => 'Unikāli pakalpojumi',
+        'views' => 'Skatījumi',
+        'view_profile' => 'Skatīt profilu',
+        'login_to_order' => 'Ielogojieties, lai pasūtītu',
     ],
 
     'order' => [

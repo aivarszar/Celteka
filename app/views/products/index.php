@@ -13,10 +13,10 @@ ob_start();
                 <input type="text" name="search" class="form-control" placeholder="<?= lang('common.search') ?>..." value="<?= e($_GET['search'] ?? '') ?>">
 
                 <select name="type" class="form-control">
-                    <option value="">Visi tipi</option>
-                    <option value="product" <?= ($_GET['type'] ?? '') === 'product' ? 'selected' : '' ?>>Produkti</option>
-                    <option value="service" <?= ($_GET['type'] ?? '') === 'service' ? 'selected' : '' ?>>Pakalpojumi</option>
-                    <option value="unique_service" <?= ($_GET['type'] ?? '') === 'unique_service' ? 'selected' : '' ?>>Unikāli pakalpojumi</option>
+                    <option value=""><?= lang('product.all_types') ?></option>
+                    <option value="product" <?= ($_GET['type'] ?? '') === 'product' ? 'selected' : '' ?>><?= lang('product.products') ?></option>
+                    <option value="service" <?= ($_GET['type'] ?? '') === 'service' ? 'selected' : '' ?>><?= lang('product.services') ?></option>
+                    <option value="unique_service" <?= ($_GET['type'] ?? '') === 'unique_service' ? 'selected' : '' ?>><?= lang('product.unique_services') ?></option>
                 </select>
 
                 <button type="submit" class="btn btn-primary"><?= lang('common.filter') ?></button>

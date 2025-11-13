@@ -56,19 +56,19 @@ ob_start();
                     </div>
 
                     <div class="mb-3">
-                        <h3>Apraksts</h3>
+                        <h3><?= lang('product.description') ?></h3>
                         <p><?= nl2br(e($product['description'])) ?></p>
                     </div>
 
                     <?php if ($product['location_name']): ?>
                         <div class="mb-3">
-                            <strong>📍 Atrašanās vieta:</strong>
+                            <strong>📍 <?= lang('product.location') ?>:</strong>
                             <?= e($product['location_name']) ?>
                         </div>
                     <?php endif; ?>
 
                     <div class="mb-3">
-                        <strong>👁️ Skatījumi:</strong>
+                        <strong>👁️ <?= lang('product.views') ?>:</strong>
                         <?= $product['views_count'] ?>
                     </div>
 
@@ -76,7 +76,7 @@ ob_start();
 
                     <!-- Seller Info -->
                     <div class="mb-3">
-                        <h3>Pārdevējs</h3>
+                        <h3><?= lang('product.seller') ?></h3>
                         <div class="d-flex justify-between align-center">
                             <div>
                                 <strong><?= e($product['seller_name']) ?></strong>
@@ -86,11 +86,11 @@ ob_start();
                                             <?= $i < round($sellerRating) ? '⭐' : '☆' ?>
                                         <?php endfor; ?>
                                     </span>
-                                    <small>(<?= $sellerReviewCount ?> atsauksmes)</small>
+                                    <small>(<?= $sellerReviewCount ?> <?= lang('common.reviews') ?>)</small>
                                 </div>
                             </div>
                             <a href="/user/<?= $product['seller_id'] ?>" class="btn btn-outline btn-sm">
-                                Skatīt profilu
+                                <?= lang('product.view_profile') ?>
                             </a>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ ob_start();
                             <?= csrf_field() ?>
                             <?php if ($product['type'] === 'product'): ?>
                                 <div class="form-group">
-                                    <label>Daudzums:</label>
+                                    <label><?= lang('order.quantity') ?>:</label>
                                     <input type="number" name="quantity" value="1" min="1" max="<?= $product['stock_quantity'] ?>" class="form-control">
                                 </div>
                             <?php endif; ?>
@@ -114,11 +114,11 @@ ob_start();
                         </form>
                     <?php elseif (Session::isLoggedIn() && Session::getUserId() == $product['seller_id']): ?>
                         <a href="/seller/products/<?= $product['id'] ?>/edit" class="btn btn-primary" style="width: 100%;">
-                            ✏️ Rediģēt produktu
+                            ✏️ <?= lang('product.edit_product') ?>
                         </a>
                     <?php else: ?>
                         <a href="/login" class="btn btn-primary" style="width: 100%;">
-                            Ielogojieties, lai pasūtītu
+                            <?= lang('product.login_to_order') ?>
                         </a>
                     <?php endif; ?>
                 </div>
