@@ -32,6 +32,12 @@ class ProfileController {
             exit;
         }
 
+        // Ielādēt user_meta laukus
+        $userMeta = $this->userModel->getMeta($userId);
+        $user['address'] = $userMeta['address'] ?? '';
+        $user['city'] = $userMeta['city'] ?? '';
+        $user['postal_code'] = $userMeta['postal_code'] ?? '';
+
         // Iegūt lietotāja statistiku
         $stats = $this->getUserStats($userId, $user['role']);
 
@@ -59,6 +65,12 @@ class ProfileController {
             header('Location: /');
             exit;
         }
+
+        // Ielādēt user_meta laukus
+        $userMeta = $this->userModel->getMeta($userId);
+        $user['address'] = $userMeta['address'] ?? '';
+        $user['city'] = $userMeta['city'] ?? '';
+        $user['postal_code'] = $userMeta['postal_code'] ?? '';
 
         view('profile/edit', [
             'user' => $user,

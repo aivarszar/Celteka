@@ -4,18 +4,17 @@ ob_start();
 
     <div class="container edit-profile-container">
         <div class="form-header">
-            <h1><?= lang('edit_profile') ?></h1>
-            <a href="/profile" class="btn btn-secondary"><?= lang('back_to_profile') ?></a>
+            <h1><?= lang('profile.edit_profile') ?></h1>
+            <a href="/profile" class="btn btn-secondary"><?= lang('profile.back_to_profile') ?></a>
         </div>
 
-        <?php if (isset($_SESSION['errors'])): ?>
+        <?php if (Session::has('errors')): ?>
             <div class="alert alert-error">
                 <ul>
-                    <?php foreach ($_SESSION['errors'] as $error): ?>
-                        <li><?= htmlspecialchars($error) ?></li>
+                    <?php foreach (Session::get('errors') as $error): ?>
+                        <li><?= e($error) ?></li>
                     <?php endforeach; ?>
                 </ul>
-                <?php unset($_SESSION['errors']); ?>
             </div>
         <?php endif; ?>
 
@@ -23,77 +22,78 @@ ob_start();
             <form action="/profile/update" method="POST" class="profile-form">
                 <?= csrf_field() ?>
                 <div class="form-section">
-                    <h2><?= lang('personal_information') ?></h2>
+                    <h2><?= lang('profile.personal_information') ?></h2>
 
                     <div class="form-group">
-                        <label for="name"><?= lang('name') ?> <span class="required">*</span></label>
+                        <label for="name"><?= lang('common.name') ?> <span class="required">*</span></label>
                         <input
                             type="text"
                             id="name"
                             name="name"
-                            value="<?= htmlspecialchars($_SESSION['old_input']['name'] ?? $user['name']) ?>"
+                            value="<?= e(Session::getOldInput('name', $user['full_name'] ?? '')) ?>"
                             required
                             maxlength="100"
                         >
                     </div>
 
                     <div class="form-group">
-                        <label for="email"><?= lang('email') ?> <span class="required">*</span></label>
+                        <label for="email"><?= lang('common.email') ?> <span class="required">*</span></label>
                         <input
                             type="email"
                             id="email"
                             name="email"
-                            value="<?= htmlspecialchars($_SESSION['old_input']['email'] ?? $user['email']) ?>"
+                            value="<?= e(Session::getOldInput('email', $user['email'] ?? '')) ?>"
                             required
                             maxlength="100"
                         >
                     </div>
 
                     <div class="form-group">
-                        <label for="phone"><?= lang('phone') ?></label>
+                        <label for="phone"><?= lang('common.phone') ?></label>
                         <input
                             type="tel"
                             id="phone"
                             name="phone"
-                            value="<?= htmlspecialchars($_SESSION['old_input']['phone'] ?? $user['phone'] ?? '') ?>"
+                            value="<?= e(Session::getOldInput('phone', $user['phone'] ?? '')) ?>"
                             maxlength="20"
+                            placeholder="+371 20000000"
                         >
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h2><?= lang('address_information') ?></h2>
+                    <h2><?= lang('profile.address_information') ?></h2>
 
                     <div class="form-group">
-                        <label for="address"><?= lang('address') ?></label>
+                        <label for="address"><?= lang('profile.address') ?></label>
                         <input
                             type="text"
                             id="address"
                             name="address"
-                            value="<?= htmlspecialchars($_SESSION['old_input']['address'] ?? $user['address'] ?? '') ?>"
+                            value="<?= e(Session::getOldInput('address', $user['address'] ?? '')) ?>"
                             maxlength="200"
                         >
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="city"><?= lang('city') ?></label>
+                            <label for="city"><?= lang('profile.city') ?></label>
                             <input
                                 type="text"
                                 id="city"
                                 name="city"
-                                value="<?= htmlspecialchars($_SESSION['old_input']['city'] ?? $user['city'] ?? '') ?>"
+                                value="<?= e(Session::getOldInput('city', $user['city'] ?? '')) ?>"
                                 maxlength="100"
                             >
                         </div>
 
                         <div class="form-group">
-                            <label for="postal_code"><?= lang('postal_code') ?></label>
+                            <label for="postal_code"><?= lang('profile.postal_code') ?></label>
                             <input
                                 type="text"
                                 id="postal_code"
                                 name="postal_code"
-                                value="<?= htmlspecialchars($_SESSION['old_input']['postal_code'] ?? $user['postal_code'] ?? '') ?>"
+                                value="<?= e(Session::getOldInput('postal_code', $user['postal_code'] ?? '')) ?>"
                                 maxlength="20"
                             >
                         </div>
@@ -101,8 +101,8 @@ ob_start();
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><?= lang('save_changes') ?></button>
-                    <a href="/profile" class="btn btn-outline"><?= lang('cancel') ?></a>
+                    <button type="submit" class="btn btn-primary"><?= lang('profile.save_changes') ?></button>
+                    <a href="/profile" class="btn btn-outline"><?= lang('common.cancel') ?></a>
                 </div>
             </form>
         </div>

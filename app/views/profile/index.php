@@ -4,99 +4,99 @@ ob_start();
 
 <div class="container profile-container">
     <div class="profile-header">
-        <h1><?= lang('my_profile') ?></h1>
+        <h1><?= lang('profile.my_profile') ?></h1>
         <div class="profile-actions">
-            <a href="/profile/edit" class="btn btn-primary"><?= lang('edit_profile') ?></a>
-            <a href="/profile/change-password" class="btn btn-secondary"><?= lang('change_password') ?></a>
+            <a href="/profile/edit" class="btn btn-primary"><?= lang('profile.edit_profile') ?></a>
+            <a href="/profile/change-password" class="btn btn-secondary"><?= lang('profile.change_password') ?></a>
         </div>
     </div>
 
     <div class="profile-content">
         <div class="profile-info">
-            <h2><?= lang('personal_information') ?></h2>
+            <h2><?= lang('profile.personal_information') ?></h2>
 
             <div class="info-group">
-                <label><?= lang('name') ?>:</label>
-                <p><?= htmlspecialchars($user['name']) ?></p>
+                <label><?= lang('common.name') ?>:</label>
+                <p><?= e($user['full_name'] ?? '') ?></p>
             </div>
 
             <div class="info-group">
-                <label><?= lang('email') ?>:</label>
-                <p><?= htmlspecialchars($user['email']) ?></p>
+                <label><?= lang('common.email') ?>:</label>
+                <p><?= e($user['email']) ?></p>
             </div>
 
             <div class="info-group">
-                <label><?= lang('phone') ?>:</label>
-                <p><?= htmlspecialchars($user['phone'] ?? lang('not_specified')) ?></p>
+                <label><?= lang('common.phone') ?>:</label>
+                <p><?= e($user['phone'] ?? lang('profile.not_specified')) ?></p>
             </div>
 
             <div class="info-group">
-                <label><?= lang('role') ?>:</label>
+                <label><?= lang('common.role') ?>:</label>
                 <p>
                     <?php if ($user['role'] === 'seller'): ?>
-                        <span class="badge badge-seller"><?= lang('seller') ?></span>
+                        <span class="badge badge-seller"><?= lang('common.seller') ?></span>
                     <?php else: ?>
-                        <span class="badge badge-buyer"><?= lang('buyer') ?></span>
+                        <span class="badge badge-buyer"><?= lang('common.buyer') ?></span>
                     <?php endif; ?>
                 </p>
             </div>
 
             <?php if (!empty($user['address']) || !empty($user['city']) || !empty($user['postal_code'])): ?>
-                <h3><?= lang('address_information') ?></h3>
+                <h3><?= lang('profile.address_information') ?></h3>
 
                 <?php if (!empty($user['address'])): ?>
                     <div class="info-group">
-                        <label><?= lang('address') ?>:</label>
-                        <p><?= htmlspecialchars($user['address']) ?></p>
+                        <label><?= lang('profile.address') ?>:</label>
+                        <p><?= e($user['address']) ?></p>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($user['city'])): ?>
                     <div class="info-group">
-                        <label><?= lang('city') ?>:</label>
-                        <p><?= htmlspecialchars($user['city']) ?></p>
+                        <label><?= lang('profile.city') ?>:</label>
+                        <p><?= e($user['city']) ?></p>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($user['postal_code'])): ?>
                     <div class="info-group">
-                        <label><?= lang('postal_code') ?>:</label>
-                        <p><?= htmlspecialchars($user['postal_code']) ?></p>
+                        <label><?= lang('profile.postal_code') ?>:</label>
+                        <p><?= e($user['postal_code']) ?></p>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
 
             <div class="info-group">
-                <label><?= lang('member_since') ?>:</label>
+                <label><?= lang('profile.member_since') ?>:</label>
                 <p><?= date('d.m.Y', strtotime($user['created_at'])) ?></p>
             </div>
         </div>
 
         <div class="profile-stats">
-            <h2><?= lang('statistics') ?></h2>
+            <h2><?= lang('profile.statistics') ?></h2>
 
             <div class="stats-grid">
                 <?php if ($user['role'] === 'seller'): ?>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['products_count'] ?></div>
-                        <div class="stat-label"><?= lang('products') ?></div>
+                        <div class="stat-label"><?= lang('common.products') ?></div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['orders_count'] ?></div>
-                        <div class="stat-label"><?= lang('sales') ?></div>
+                        <div class="stat-label"><?= lang('common.sales') ?></div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['reviews_count'] ?></div>
-                        <div class="stat-label"><?= lang('reviews') ?></div>
+                        <div class="stat-label"><?= lang('common.reviews') ?></div>
                     </div>
                 <?php else: ?>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['orders_count'] ?></div>
-                        <div class="stat-label"><?= lang('orders') ?></div>
+                        <div class="stat-label"><?= lang('common.orders') ?></div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number"><?= $stats['reviews_count'] ?></div>
-                        <div class="stat-label"><?= lang('reviews') ?></div>
+                        <div class="stat-label"><?= lang('common.reviews') ?></div>
                     </div>
                 <?php endif; ?>
             </div>
