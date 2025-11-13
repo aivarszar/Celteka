@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="<?= htmlspecialchars($config['app']['locale']) ?>">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= Lang::get('edit_profile') ?> - <?= htmlspecialchars($config['app']['name']) ?></title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body>
-    <?php require_once ROOT_DIR . '/app/views/layout.php'; ?>
+<?php
+ob_start();
+?>
 
     <div class="container edit-profile-container">
         <div class="form-header">
@@ -113,9 +106,7 @@
                 </div>
             </form>
         </div>
-    </div>
 
-    <?php unset($_SESSION['old_input']); ?>
 
     <style>
         .edit-profile-container {
@@ -243,6 +234,9 @@
                 width: 100%;
             }
         }
-    </style>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+$title = Lang::get('edit_profile') . ' - ' . lang('app.name');
+require __DIR__ . '/../layout.php';
+?>

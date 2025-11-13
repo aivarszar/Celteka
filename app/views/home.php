@@ -3,6 +3,86 @@ require_once __DIR__ . '/../helpers/AuthHelper.php';
 ob_start();
 ?>
 
+<!-- Development Notice Banner -->
+<div class="dev-banner">
+    <div class="container">
+        <div class="dev-banner-content">
+            <div class="dev-banner-icon">⚠️</div>
+            <div class="dev-banner-text">
+                <strong><?= lang('dev.banner_title', 'Projekts izstrādes stadijā') ?></strong>
+                <p><?= lang('dev.banner_message', 'Šobrīd platforma tiek aktīvi izstrādāta un testēta. Dažas funkcijas var būt nepieejamas vai darboties nestabili.') ?></p>
+            </div>
+            <div class="dev-banner-status">
+                <span class="status-badge status-dev">BETA</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dev-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dev-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.dev-banner-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.dev-banner-text {
+    flex: 1;
+}
+
+.dev-banner-text strong {
+    display: block;
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.dev-banner-text p {
+    margin: 0;
+    opacity: 0.95;
+    font-size: 0.95rem;
+}
+
+.dev-banner-status {
+    flex-shrink: 0;
+}
+
+.status-badge.status-dev {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+    .dev-banner-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .dev-banner-icon {
+        font-size: 2rem;
+    }
+}
+</style>
+
 <!-- Hero Section -->
 <section class="hero">
     <div class="container">

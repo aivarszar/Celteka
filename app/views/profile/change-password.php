@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="<?= htmlspecialchars($config['app']['locale']) ?>">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= Lang::get('change_password') ?> - <?= htmlspecialchars($config['app']['name']) ?></title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body>
-    <?php require_once ROOT_DIR . '/app/views/layout.php'; ?>
+<?php
+ob_start();
+?>
 
     <div class="container change-password-container">
         <div class="form-header">
@@ -98,7 +91,7 @@
                 </div>
             </form>
         </div>
-    </div>
+
 
     <style>
         .change-password-container {
@@ -351,5 +344,9 @@
             }
         });
     </script>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+$title = Lang::get('change_password') . ' - ' . lang('app.name');
+require __DIR__ . '/../layout.php';
+?>

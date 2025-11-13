@@ -29,25 +29,37 @@
                     <?php endforeach; ?>
                 </div>
 
+                <?php
+                // Noteikt aktīvo lapu
+                $currentPath = $_SERVER['REQUEST_URI'] ?? '/';
+                $currentPath = strtok($currentPath, '?'); // Noņemt query string
+                function isActive($path) {
+                    global $currentPath;
+                    if ($path === '/') {
+                        return $currentPath === '/' ? 'active' : '';
+                    }
+                    return (strpos($currentPath, $path) === 0) ? 'active' : '';
+                }
+                ?>
                 <ul class="nav-menu" id="navMenu">
-                    <li><a href="/"><?= lang('nav.home') ?></a></li>
-                    <li><a href="/products"><?= lang('nav.products') ?></a></li>
+                    <li><a href="/" class="<?= isActive('/') ?>"><?= lang('nav.home') ?></a></li>
+                    <li><a href="/products" class="<?= isActive('/product') ?>"><?= lang('nav.products') ?></a></li>
 
                     <?php if (Session::isLoggedIn()): ?>
                         <?php if (AuthHelper::isSeller()): ?>
-                            <li><a href="/seller/products"><?= lang('nav.my_products') ?></a></li>
-                            <li><a href="/seller/orders"><?= lang('nav.my_orders') ?></a></li>
+                            <li><a href="/seller/products" class="<?= isActive('/seller/products') ?>"><?= lang('nav.my_products') ?></a></li>
+                            <li><a href="/seller/orders" class="<?= isActive('/seller/orders') ?>"><?= lang('nav.my_orders') ?></a></li>
                         <?php else: ?>
-                            <li><a href="/orders"><?= lang('nav.my_orders') ?></a></li>
+                            <li><a href="/orders" class="<?= isActive('/order') ?>"><?= lang('nav.my_orders') ?></a></li>
                         <?php endif; ?>
-                        <li><a href="/profile"><?= lang('nav.profile') ?></a></li>
+                        <li><a href="/profile" class="<?= isActive('/profile') ?>"><?= lang('nav.profile') ?></a></li>
                         <?php if (AuthHelper::isAdmin()): ?>
-                            <li><a href="/admin"><?= lang('nav.dashboard') ?></a></li>
+                            <li><a href="/admin" class="<?= isActive('/admin') ?>"><?= lang('nav.dashboard') ?></a></li>
                         <?php endif; ?>
                         <li><a href="/logout"><?= lang('nav.logout') ?></a></li>
                     <?php else: ?>
-                        <li><a href="/login"><?= lang('nav.login') ?></a></li>
-                        <li><a href="/register" class="btn btn-primary btn-sm"><?= lang('nav.register') ?></a></li>
+                        <li><a href="/login" class="<?= isActive('/login') ?>"><?= lang('nav.login') ?></a></li>
+                        <li><a href="/register" class="btn btn-primary btn-sm <?= isActive('/register') ?>"><?= lang('nav.register') ?></a></li>
                     <?php endif; ?>
                 </ul>
 
