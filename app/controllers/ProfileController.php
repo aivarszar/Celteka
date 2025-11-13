@@ -119,12 +119,41 @@ class ProfileController {
             }
             error_log("ProfileController::update() - CSRF token in POST: " . $_POST['csrf_token']);
 
+            error_log("ProfileController::update() - ===== IMMEDIATELY BEFORE RequestHelper::verifyCsrf() =====");
+            error_log("ProfileController::update() - About to call RequestHelper::verifyCsrf()");
+            error_log("ProfileController::update() - Class exists: " . (class_exists('RequestHelper') ? 'YES' : 'NO'));
+            error_log("ProfileController::update() - Method exists: " . (method_exists('RequestHelper', 'verifyCsrf') ? 'YES' : 'NO'));
+
+            // Pievienot shutdown function lai noķertu Fatal Errors
+            register_shutdown_function(function() {
+                $error = error_get_last();
+                if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+                    error_log("ProfileController::update() - PHP FATAL ERROR DETECTED:");
+                    error_log("ProfileController::update() - Error: " . $error['message']);
+                    error_log("ProfileController::update() - File: " . $error['file']);
+                    error_log("ProfileController::update() - Line: " . $error['line']);
+                }
+            });
+
+            error_log("ProfileController::update() - Shutdown function registered");
+            error_log("ProfileController::update() - NOW calling RequestHelper::verifyCsrf()...");
+
             RequestHelper::verifyCsrf();
+
+            error_log("ProfileController::update() - ===== IMMEDIATELY AFTER RequestHelper::verifyCsrf() =====");
             error_log("ProfileController::update() - CSRF verified successfully");
         } catch (Exception $e) {
-            error_log("ProfileController::update() - FATAL ERROR: " . $e->getMessage());
+            error_log("ProfileController::update() - EXCEPTION CAUGHT: " . $e->getMessage());
+            error_log("ProfileController::update() - Exception class: " . get_class($e));
             error_log("ProfileController::update() - Error trace: " . $e->getTraceAsString());
             Session::flash('error', 'System error: ' . $e->getMessage());
+            header('Location: /profile/edit');
+            exit;
+        } catch (Throwable $e) {
+            error_log("ProfileController::update() - THROWABLE CAUGHT: " . $e->getMessage());
+            error_log("ProfileController::update() - Throwable class: " . get_class($e));
+            error_log("ProfileController::update() - Error trace: " . $e->getTraceAsString());
+            Session::flash('error', 'Critical error: ' . $e->getMessage());
             header('Location: /profile/edit');
             exit;
         }
