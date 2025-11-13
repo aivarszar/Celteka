@@ -4,6 +4,8 @@
  * Par mums, Kontakti, u.c. statiskās lapas
  */
 
+require_once __DIR__ . '/../helpers/RequestHelper.php';
+
 class PageController {
     /**
      * Par mums lapa

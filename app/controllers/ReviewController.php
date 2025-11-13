@@ -4,6 +4,8 @@
  * Atsauksmju sistēma (divpusējas - buyer to seller un seller to buyer)
  */
 
+require_once __DIR__ . '/../helpers/RequestHelper.php';
+
 class ReviewController {
     private $db;
     private $reviewModel;

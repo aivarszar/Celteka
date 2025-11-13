@@ -4,6 +4,8 @@
  * Pircēji var skatīt savus pasūtījumus
  */
 
+require_once __DIR__ . '/../helpers/RequestHelper.php';
+
 class OrderController {
     private $db;
     private $orderModel;

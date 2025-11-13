@@ -4,6 +4,9 @@
  * Administratora paneļa funkcionalitāte
  */
 
+require_once __DIR__ . '/../helpers/RequestHelper.php';
+require_once __DIR__ . '/../helpers/AuthHelper.php';
+
 class AdminController {
     private $db;
 
