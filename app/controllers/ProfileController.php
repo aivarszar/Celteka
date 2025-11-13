@@ -425,6 +425,42 @@ class ProfileController {
     }
 
     /**
+     * Parāda publisko lietotāja profilu
+     */
+    public function publicProfile($id) {
+        $user = $this->userModel->findById($id);
+
+        if (!$user) {
+            header('Location: /');
+            exit;
+        }
+
+        // Ielādēt user_meta laukus
+        $userMeta = $this->userModel->getMeta($id);
+        $user['address'] = $userMeta['address'] ?? '';
+        $user['city'] = $userMeta['city'] ?? '';
+        $user['postal_code'] = $userMeta['postal_code'] ?? '';
+
+        // Iegūt lietotāja statistiku
+        $stats = $this->getUserStats($id, $user['role']);
+
+        // Ja lietotājs ir pārdevējs, iegūt viņa produktus
+        $products = [];
+        if ($user['role'] === 'seller') {
+            require_once ROOT_DIR . '/app/models/Product.php';
+            $productModel = new Product();
+            $products = $productModel->getAll(['seller_id' => $id], 12);
+        }
+
+        view('profile/public', [
+            'user' => $user,
+            'stats' => $stats,
+            'products' => $products,
+            'config' => config()
+        ]);
+    }
+
+    /**
      * Iegūt lietotāja statistiku
      */
     private function getUserStats($userId, $role) {

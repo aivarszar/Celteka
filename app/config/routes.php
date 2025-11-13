@@ -66,6 +66,9 @@ $router->post('/profile/update', 'ProfileController@update', 'profile.update');
 $router->get('/profile/change-password', 'ProfileController@changePassword', 'profile.password');
 $router->post('/profile/update-password', 'ProfileController@updatePassword', 'profile.password.update');
 
+// Publiskais profils
+$router->get('/user/{id}', 'ProfileController@publicProfile', 'user.profile');
+
 // Administratora funkcijas
 $router->get('/admin', 'AdminController@index', 'admin');
 $router->get('/admin/users', 'AdminController@users', 'admin.users');

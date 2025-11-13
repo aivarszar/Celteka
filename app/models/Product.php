@@ -50,8 +50,8 @@ class Product {
         $where = [];
         $params = [];
 
-        // Only filter by is_active if NOT in seller management mode
-        // Sellers should see ALL their products (active and inactive)
+        // Ja skatās pārdevējs savus produktus, rādīt arī neaktīvos
+        // Citiem lietotājiem rādīt tikai aktīvos
         if (empty($filters['seller_id'])) {
             $where[] = 'p.is_active = 1';
         }
@@ -83,7 +83,7 @@ class Product {
             $params['seller_id'] = $filters['seller_id'];
         }
 
-        $whereClause = implode(' AND ', $where);
+        $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
         // LIMIT un OFFSET prasa INT, nevis bound parameters
         $limit = (int)$limit;
@@ -96,7 +96,7 @@ class Product {
                 LEFT JOIN categories c ON p.category_id = c.id
                 LEFT JOIN users u ON p.seller_id = u.id
                 LEFT JOIN locations l ON p.location_id = l.id
-                WHERE {$whereClause}
+                {$whereClause}
                 ORDER BY p.created_at DESC
                 LIMIT {$limit} OFFSET {$offset}";
 

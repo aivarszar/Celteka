@@ -56,7 +56,11 @@ class Order {
 
         $sql = "SELECT o.*,
                        b.full_name as buyer_name,
-                       s.full_name as seller_name
+                       b.email as buyer_email,
+                       s.full_name as seller_name,
+                       s.email as seller_email,
+                       (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as items_count,
+                       (SELECT product_title FROM order_items WHERE order_id = o.id LIMIT 1) as product_title
                 FROM orders o
                 LEFT JOIN users b ON o.buyer_id = b.id
                 LEFT JOIN users s ON o.seller_id = s.id

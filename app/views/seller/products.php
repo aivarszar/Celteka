@@ -30,6 +30,11 @@ ob_start();
                                 <?php if (!$product['is_active']): ?>
                                     <span style="color: var(--danger); font-size: 0.875rem;">(<?= lang('product.inactive') ?>)</span>
                                 <?php endif; ?>
+                                <?php if (!empty($product['description'])): ?>
+                                    <br><small style="color: #666; font-size: 0.875rem;">
+                                        <?= e(mb_substr($product['description'], 0, 100)) ?><?= mb_strlen($product['description']) > 100 ? '...' : '' ?>
+                                    </small>
+                                <?php endif; ?>
                             </td>
                             <td style="padding: 1rem;">€<?= number_format($product['price'], 2) ?></td>
                             <td style="padding: 1rem;">
