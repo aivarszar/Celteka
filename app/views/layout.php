@@ -24,17 +24,20 @@
                 // Noteikt aktīvo lapu
                 $currentPath = $_SERVER['REQUEST_URI'] ?? '/';
                 $currentPath = strtok($currentPath, '?'); // Noņemt query string
+                $currentPath = rtrim($currentPath, '/'); // Noņemt trailing slash
 
                 function isActive($path) {
                     global $currentPath;
                     // Eksaktais match sākumlapai
-                    if ($path === '/' && $currentPath === '/') {
+                    if ($path === '/' && $currentPath === '') {
                         return 'active';
                     }
                     // Ignore home page for other paths
                     if ($path === '/') {
                         return '';
                     }
+                    // Remove trailing slash from path
+                    $path = rtrim($path, '/');
                     // Check if current path starts with the given path
                     return (strpos($currentPath, $path) === 0) ? 'active' : '';
                 }

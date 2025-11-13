@@ -82,24 +82,46 @@ class ProfileController {
      * Atjaunina lietotāja profilu
      */
     public function update() {
+        error_log("=== ProfileController::update() START ===");
+
         // Pārbaudīt vai lietotājs ir autorizēts
         if (!AuthHelper::isLoggedIn()) {
+            error_log("ProfileController::update() - User not logged in");
             header('Location: /login');
             exit;
         }
+        error_log("ProfileController::update() - User is logged in");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error_log("ProfileController::update() - Not POST request");
             header('Location: /profile');
             exit;
         }
+        error_log("ProfileController::update() - POST request confirmed");
 
         // CSRF verifikācija
-        RequestHelper::verifyCsrf();
+        try {
+            error_log("ProfileController::update() - Verifying CSRF");
+            RequestHelper::verifyCsrf();
+            error_log("ProfileController::update() - CSRF verified");
+        } catch (Exception $e) {
+            error_log("ProfileController::update() - CSRF verification failed: " . $e->getMessage());
+            throw $e;
+        }
 
         $userId = AuthHelper::getUserId();
-        $user = $this->userModel->findById($userId);
+        error_log("ProfileController::update() - User ID: " . $userId);
+
+        try {
+            $user = $this->userModel->findById($userId);
+            error_log("ProfileController::update() - User found: " . json_encode($user));
+        } catch (Exception $e) {
+            error_log("ProfileController::update() - Error finding user: " . $e->getMessage());
+            throw $e;
+        }
 
         if (!$user) {
+            error_log("ProfileController::update() - User not found in database");
             Session::flash('error', lang('messages.user_not_found'));
             header('Location: /');
             exit;
@@ -114,6 +136,8 @@ class ProfileController {
         $city = trim($_POST['city'] ?? '');
         $postal_code = trim($_POST['postal_code'] ?? '');
 
+        error_log("ProfileController::update() - Input data: name=$name, email=$email, phone=$phone");
+
         // Validācija
         if (empty($name)) {
             $errors[] = lang('messages.name_required');
@@ -125,13 +149,18 @@ class ProfileController {
 
         // Pārbaudīt vai e-pasts jau eksistē (izņemot pašreizējo lietotāju)
         if ($email !== $user['email']) {
-            $existingUser = $this->userModel->findByEmail($email);
-            if ($existingUser) {
-                $errors[] = lang('messages.email_exists');
+            try {
+                $existingUser = $this->userModel->findByEmail($email);
+                if ($existingUser) {
+                    $errors[] = lang('messages.email_exists');
+                }
+            } catch (Exception $e) {
+                error_log("ProfileController::update() - Error checking email: " . $e->getMessage());
             }
         }
 
         if (!empty($errors)) {
+            error_log("ProfileController::update() - Validation errors: " . json_encode($errors));
             Session::flash('errors', $errors);
             // Saglabāt tikai nepieciešamos laukus, nevis visu $_POST
             Session::set('old_input', [
@@ -146,6 +175,8 @@ class ProfileController {
             exit;
         }
 
+        error_log("ProfileController::update() - Validation passed, updating user");
+
         // Atjaunot profilu - users tabulas lauki
         $userData = [
             'full_name' => $name,
@@ -154,34 +185,61 @@ class ProfileController {
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 
-        $result = $this->userModel->update($userId, $userData);
+        try {
+            error_log("ProfileController::update() - Updating user data: " . json_encode($userData));
+            $result = $this->userModel->update($userId, $userData);
+            error_log("ProfileController::update() - User update result: " . ($result ? 'success' : 'failed'));
+        } catch (Exception $e) {
+            error_log("ProfileController::update() - Error updating user: " . $e->getMessage());
+            error_log("ProfileController::update() - Stack trace: " . $e->getTraceAsString());
+            Session::flash('error', 'Database error: ' . $e->getMessage());
+            header('Location: /profile/edit');
+            exit;
+        }
 
         // Saglabāt papildus laukus user_meta tabulā
         if ($result) {
-            if (!empty($address)) {
-                $this->userModel->setMeta($userId, 'address', $address);
-            }
-            if (!empty($city)) {
-                $this->userModel->setMeta($userId, 'city', $city);
-            }
-            if (!empty($postal_code)) {
-                $this->userModel->setMeta($userId, 'postal_code', $postal_code);
+            try {
+                error_log("ProfileController::update() - Updating user meta");
+                if (!empty($address)) {
+                    $this->userModel->setMeta($userId, 'address', $address);
+                    error_log("ProfileController::update() - Address meta saved");
+                }
+                if (!empty($city)) {
+                    $this->userModel->setMeta($userId, 'city', $city);
+                    error_log("ProfileController::update() - City meta saved");
+                }
+                if (!empty($postal_code)) {
+                    $this->userModel->setMeta($userId, 'postal_code', $postal_code);
+                    error_log("ProfileController::update() - Postal code meta saved");
+                }
+            } catch (Exception $e) {
+                error_log("ProfileController::update() - Error updating meta: " . $e->getMessage());
             }
         }
 
         if ($result) {
             // Atjaunot sesijas datus - izmantojam pilnus datus no DB
-            $updatedUser = $this->userModel->findById($userId);
-            if ($updatedUser) {
-                Session::setUser($updatedUser);
+            try {
+                error_log("ProfileController::update() - Refreshing session data");
+                $updatedUser = $this->userModel->findById($userId);
+                if ($updatedUser) {
+                    Session::setUser($updatedUser);
+                    error_log("ProfileController::update() - Session refreshed");
+                }
+            } catch (Exception $e) {
+                error_log("ProfileController::update() - Error refreshing session: " . $e->getMessage());
             }
 
             Session::flash('success', lang('messages.profile_updated'));
+            error_log("ProfileController::update() - SUCCESS - Redirecting to profile");
         } else {
             Session::flash('error', lang('messages.profile_update_failed'));
+            error_log("ProfileController::update() - FAILED - Redirecting to edit");
         }
 
         header('Location: /profile');
+        error_log("=== ProfileController::update() END ===");
         exit;
     }
 
