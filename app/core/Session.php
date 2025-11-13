@@ -67,11 +67,30 @@ class Session {
     }
 
     public static function getCsrfToken() {
-        return self::get('csrf_token');
+        $csrfToken = self::get('csrf_token');
+        error_log("Session::getCsrfToken() - Token from session: " . ($csrfToken ?? 'NULL'));
+        return $csrfToken;
     }
 
     public static function verifyCsrfToken($token) {
-        return hash_equals(self::getCsrfToken(), $token);
+        error_log("Session::verifyCsrfToken() - START");
+        $sessionToken = self::getCsrfToken();
+        error_log("Session::verifyCsrfToken() - Session token: " . ($sessionToken ?? 'NULL'));
+        error_log("Session::verifyCsrfToken() - Provided token: " . ($token ?? 'NULL'));
+
+        if ($sessionToken === null || $token === null) {
+            error_log("Session::verifyCsrfToken() - One of tokens is NULL, returning false");
+            return false;
+        }
+
+        try {
+            $result = hash_equals($sessionToken, $token);
+            error_log("Session::verifyCsrfToken() - hash_equals result: " . ($result ? 'TRUE' : 'FALSE'));
+            return $result;
+        } catch (Exception $e) {
+            error_log("Session::verifyCsrfToken() - hash_equals EXCEPTION: " . $e->getMessage());
+            return false;
+        }
     }
 
     public static function regenerate() {
