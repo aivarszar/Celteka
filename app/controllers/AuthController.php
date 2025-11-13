@@ -90,7 +90,7 @@ class AuthController {
         $passwordConfirm = $_POST['password_confirm'] ?? '';
         $fullName = trim($_POST['full_name'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
-        $role = $_POST['role'] ?? 'buyer';
+        $roles = $_POST['roles'] ?? [];
 
         $errors = [];
 
@@ -114,8 +114,16 @@ class AuthController {
             $errors[] = 'Vārds ir obligāts';
         }
 
-        if (!in_array($role, ['buyer', 'seller'])) {
-            $errors[] = 'Nederīga loma';
+        // Validēt lomas (vismaz viena jābūt izvēlētai)
+        if (empty($roles) || !is_array($roles)) {
+            $errors[] = 'Lūdzu, izvēlieties vismaz vienu lomu';
+        } else {
+            $availableRoles = ['buyer', 'seller'];
+            foreach ($roles as $role) {
+                if (!in_array($role, $availableRoles)) {
+                    $errors[] = 'Nederīga loma: ' . $role;
+                }
+            }
         }
 
         if (!empty($errors)) {
@@ -123,8 +131,9 @@ class AuthController {
             redirect('/register');
         }
 
-        // Izveidot lietotāju
-        $roleId = $this->userModel->getRoleId($role);
+        // Izveidot lietotāju ar primāro lomu (pirmā izvēlētā)
+        $primaryRole = $roles[0];
+        $roleId = $this->userModel->getRoleId($primaryRole);
 
         $userId = $this->userModel->create([
             'email' => $email,
@@ -135,13 +144,16 @@ class AuthController {
             'is_active' => true,
         ]);
 
-        // Piešķirt lomu caur user_role_assignments (multi-role atbalsts)
+        // Piešķirt VISAS izvēlētās lomas caur user_role_assignments (multi-role atbalsts)
         try {
-            db()->insert('user_role_assignments', [
-                'user_id' => $userId,
-                'role' => $role,
-                'assigned_at' => date('Y-m-d H:i:s')
-            ]);
+            foreach ($roles as $role) {
+                db()->insert('user_role_assignments', [
+                    'user_id' => $userId,
+                    'role' => $role,
+                    'assigned_at' => date('Y-m-d H:i:s')
+                ]);
+                error_log("Assigned role '{$role}' to new user ID: " . $userId);
+            }
 
             // Pārbaudīt vai tas ir pirmais lietotājs - ja jā, piešķirt admin lomu
             $userCount = db()->fetchColumn("SELECT COUNT(*) FROM users");
@@ -215,8 +227,21 @@ class AuthController {
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            // TODO: Nosūtīt e-pastu ar atjaunošanas saiti
-            // Pagaidām tikai logojam
+            // Nosūtīt e-pastu ar atjaunošanas saiti
+            try {
+                require_once __DIR__ . '/../helpers/EmailHelper.php';
+                $emailSent = EmailHelper::sendPasswordReset($email, $token, $user['full_name'] ?? '');
+
+                if ($emailSent) {
+                    error_log("Password reset email sent successfully to: $email");
+                } else {
+                    error_log("Password reset email failed to send to: $email");
+                }
+            } catch (Exception $e) {
+                error_log("Error sending password reset email: " . $e->getMessage());
+            }
+
+            // Arī logojam konsol lai var atrast development režīmā
             error_log("Password reset token for $email: $token (expires at $expiry)");
             error_log("Reset URL: " . ($_SERVER['REQUEST_SCHEME'] ?? 'http') . "://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "/reset-password?token=$token");
         }

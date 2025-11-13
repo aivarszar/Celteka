@@ -19,13 +19,37 @@ class AuthHelper {
             $roles = [$roles];
         }
 
-        $userRole = Session::getUserRole();
+        $userId = Session::getUserId();
 
-        // Iegūt lomas nosaukumu
-        $roleResult = db()->fetch("SELECT name FROM user_roles WHERE id = :id", ['id' => $userRole]);
+        // Iegūt lietotāja lomas no user_role_assignments
+        $userRoles = self::getUserRoles();
 
-        if (!$roleResult || !in_array($roleResult['name'], $roles)) {
-            Session::flash('error', 'Jums nav pietiekamu tiesību šīs lapas skatīšanai');
+        // Pārbaudīt, vai lietotājam ir kāda no nepieciešamajām lomām
+        $hasRequiredRole = false;
+        foreach ($roles as $role) {
+            if (in_array($role, $userRoles)) {
+                $hasRequiredRole = true;
+                break;
+            }
+        }
+
+        if (!$hasRequiredRole) {
+            // Izveidot draudzīgu ziņojumu atkarībā no vajadzīgajām lomām
+            if (in_array('seller', $roles)) {
+                Session::flash('error', 'Lai piekļūtu pārdevēja funkcijām, lūdzu <a href="/profile/edit">pievienojiet pārdevēja lomu savam profilam</a>.');
+            } elseif (in_array('admin', $roles)) {
+                Session::flash('error', 'Piekļuve liegta. Nepieciešamas administratora tiesības.');
+            } else {
+                $roleNames = array_map(function($r) {
+                    $names = [
+                        'buyer' => 'pircēja',
+                        'seller' => 'pārdevēja',
+                        'admin' => 'administratora'
+                    ];
+                    return $names[$r] ?? $r;
+                }, $roles);
+                Session::flash('error', 'Lai piekļūtu šai lapai, nepieciešama ' . implode(' vai ', $roleNames) . ' loma. <a href="/profile/edit">Pievienojiet lomu savam profilam</a>.');
+            }
             redirect('/');
         }
     }

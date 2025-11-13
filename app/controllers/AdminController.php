@@ -60,29 +60,64 @@ class AdminController {
      * Lietotāja lomu pārvaldība
      */
     public function updateUserRoles($userId) {
+        error_log("=== AdminController::updateUserRoles START ===");
+        error_log("User ID parameter: " . var_export($userId, true));
+        error_log("POST data: " . json_encode($_POST));
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error_log("Not POST request, redirecting");
             redirect('/admin/users');
         }
 
-        RequestHelper::verifyCsrf();
+        try {
+            RequestHelper::verifyCsrf();
+            error_log("CSRF verified");
+        } catch (Exception $e) {
+            error_log("CSRF verification failed: " . $e->getMessage());
+            Session::flash('error', 'CSRF verifikācijas kļūda');
+            redirect('/admin/users');
+        }
 
         $roles = $_POST['roles'] ?? [];
         $availableRoles = ['admin', 'seller', 'buyer'];
 
+        error_log("Roles to assign: " . json_encode($roles));
+
+        // Validēt user ID
+        if (empty($userId) || !is_numeric($userId)) {
+            error_log("Invalid user ID: " . var_export($userId, true));
+            Session::flash('error', 'Nederīgs lietotāja ID');
+            redirect('/admin/users');
+        }
+
         // Validēt lomas
         foreach ($roles as $role) {
             if (!in_array($role, $availableRoles)) {
+                error_log("Invalid role: " . $role);
                 Session::flash('error', 'Nederīga loma: ' . $role);
                 redirect('/admin/users');
             }
         }
 
         try {
+            // Pārbaudīt, vai lietotājs eksistē
+            $userExists = $this->db->fetchColumn("SELECT COUNT(*) FROM users WHERE id = ?", [$userId]);
+            if (!$userExists) {
+                error_log("User not found: " . $userId);
+                Session::flash('error', 'Lietotājs nav atrasts');
+                redirect('/admin/users');
+            }
+
+            error_log("User exists, proceeding with role update");
+
             // Dzēst visas esošās lomas
             $this->db->query("DELETE FROM user_role_assignments WHERE user_id = ?", [$userId]);
+            error_log("Deleted existing roles for user " . $userId);
 
             // Pievienot jaunās lomas
-            $currentUserId = AuthHelper::getUserId();
+            $currentUserId = Session::getUserId();
+            error_log("Current admin user ID: " . $currentUserId);
+
             foreach ($roles as $role) {
                 $this->db->insert('user_role_assignments', [
                     'user_id' => $userId,
@@ -90,12 +125,15 @@ class AdminController {
                     'assigned_by' => $currentUserId,
                     'assigned_at' => date('Y-m-d H:i:s')
                 ]);
+                error_log("Inserted role: " . $role . " for user " . $userId);
             }
 
             Session::flash('success', 'Lietotāja lomas veiksmīgi atjauninātas');
+            error_log("=== AdminController::updateUserRoles SUCCESS ===");
         } catch (Exception $e) {
             error_log("Error updating user roles: " . $e->getMessage());
-            Session::flash('error', 'Kļūda atjauninot lomas');
+            error_log("Stack trace: " . $e->getTraceAsString());
+            Session::flash('error', 'Kļūda atjauninot lomas: ' . $e->getMessage());
         }
 
         redirect('/admin/users');
@@ -317,5 +355,65 @@ class AdminController {
         }
 
         redirect('/admin/migrate');
+    }
+
+    /**
+     * E-pastu skatīšanas lapa (development režīmam)
+     */
+    public function emails() {
+        require_once __DIR__ . '/../helpers/EmailHelper.php';
+
+        $emails = EmailHelper::getStoredEmails(100);
+
+        view('admin/emails', [
+            'emails' => $emails,
+            'config' => config()
+        ]);
+    }
+
+    /**
+     * Konkrēta e-pasta skatīšana
+     */
+    public function viewEmail($filename) {
+        require_once __DIR__ . '/../helpers/EmailHelper.php';
+
+        $emailsDir = __DIR__ . '/../../storage/emails';
+        $filepath = $emailsDir . '/' . basename($filename);
+
+        if (!file_exists($filepath)) {
+            Session::flash('error', 'E-pasts nav atrasts');
+            redirect('/admin/emails');
+        }
+
+        $content = file_get_contents($filepath);
+
+        // Parsēt e-pasta saturu
+        $headers = [];
+        $body = '';
+        $lines = explode("\r\n", $content);
+        $bodyStarted = false;
+
+        foreach ($lines as $line) {
+            if (!$bodyStarted) {
+                if (trim($line) === '') {
+                    $bodyStarted = true;
+                    continue;
+                }
+                if (strpos($line, ':') !== false) {
+                    list($key, $value) = explode(':', $line, 2);
+                    $headers[trim($key)] = trim($value);
+                }
+            } else {
+                $body .= $line . "\n";
+            }
+        }
+
+        view('admin/view-email', [
+            'filename' => basename($filename),
+            'filepath' => $filepath,
+            'headers' => $headers,
+            'body' => $body,
+            'config' => config()
+        ]);
     }
 }

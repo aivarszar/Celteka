@@ -155,8 +155,9 @@ class ProfileController {
         $address = trim($_POST['address'] ?? '');
         $city = trim($_POST['city'] ?? '');
         $postal_code = trim($_POST['postal_code'] ?? '');
+        $roles = $_POST['roles'] ?? [];
 
-        error_log("ProfileController::update() - Input data: name=$name, email=$email, phone=$phone");
+        error_log("ProfileController::update() - Input data: name=$name, email=$email, phone=$phone, roles=" . json_encode($roles));
 
         // Validācija
         if (empty($name)) {
@@ -165,6 +166,18 @@ class ProfileController {
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = lang('messages.email_invalid');
+        }
+
+        // Validēt lomas
+        if (empty($roles) || !is_array($roles)) {
+            $errors[] = 'Lūdzu, izvēlieties vismaz vienu lomu';
+        } else {
+            $availableRoles = ['buyer', 'seller'];
+            foreach ($roles as $role) {
+                if (!in_array($role, $availableRoles)) {
+                    $errors[] = 'Nederīga loma: ' . $role;
+                }
+            }
         }
 
         // Pārbaudīt vai e-pasts jau eksistē (izņemot pašreizējo lietotāju)
@@ -235,6 +248,35 @@ class ProfileController {
                 }
             } catch (Exception $e) {
                 error_log("ProfileController::update() - Error updating meta: " . $e->getMessage());
+            }
+
+            // Atjaunot lietotāja lomas (izņemot admin lomu)
+            try {
+                error_log("ProfileController::update() - Updating user roles");
+
+                // Iegūt pašreizējās lomas
+                $currentRoles = AuthHelper::getUserRoles();
+                $hasAdminRole = in_array('admin', $currentRoles);
+
+                // Dzēst esošās lomas (izņemot admin)
+                db()->query("DELETE FROM user_role_assignments WHERE user_id = ? AND role != 'admin'", [$userId]);
+                error_log("ProfileController::update() - Deleted non-admin roles");
+
+                // Pievienot jaunās lomas
+                foreach ($roles as $role) {
+                    db()->insert('user_role_assignments', [
+                        'user_id' => $userId,
+                        'role' => $role,
+                        'assigned_by' => $userId, // Lietotājs pats sev piešķir
+                        'assigned_at' => date('Y-m-d H:i:s')
+                    ]);
+                    error_log("ProfileController::update() - Added role: " . $role);
+                }
+
+                error_log("ProfileController::update() - Roles updated successfully");
+            } catch (Exception $e) {
+                error_log("ProfileController::update() - Error updating roles: " . $e->getMessage());
+                error_log("ProfileController::update() - Role update stack trace: " . $e->getTraceAsString());
             }
         }
 

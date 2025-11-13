@@ -45,12 +45,28 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label"><?= lang('auth.role') ?> *</label>
-                    <select name="role" class="form-control" required>
-                        <option value="buyer"><?= lang('auth.role_buyer') ?></option>
-                        <option value="seller"><?= lang('auth.role_seller') ?></option>
-                    </select>
-                    <small>Izvēlieties savu galveno lomu platformā</small>
+                    <label class="form-label"><?= lang('auth.roles') ?> *</label>
+                    <div class="role-checkboxes" style="background: #f9f9f9; padding: 1rem; border-radius: 8px;">
+                        <div class="form-check" style="margin-bottom: 0.75rem;">
+                            <input type="checkbox" name="roles[]" value="buyer" id="role_buyer" class="form-check-input" checked>
+                            <label class="form-check-label" for="role_buyer" style="font-weight: 500;">
+                                🛒 <?= lang('auth.role_buyer') ?>
+                            </label>
+                            <small class="d-block" style="margin-left: 1.5rem; color: #666;">
+                                Es vēlos iegādāties produktus un pakalpojumus
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" name="roles[]" value="seller" id="role_seller" class="form-check-input">
+                            <label class="form-check-label" for="role_seller" style="font-weight: 500;">
+                                🏪 <?= lang('auth.role_seller') ?>
+                            </label>
+                            <small class="d-block" style="margin-left: 1.5rem; color: #666;">
+                                Es vēlos pārdot savus produktus un pakalpojumus
+                            </small>
+                        </div>
+                    </div>
+                    <small style="color: #d9534f; display: none;" id="role_error">Lūdzu, izvēlieties vismaz vienu lomu</small>
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
@@ -78,6 +94,34 @@ function togglePassword(inputId, button) {
         button.title = 'Rādīt paroli';
     }
 }
+
+// Validēt, ka vismaz viena loma ir izvēlēta
+document.querySelector('form').addEventListener('submit', function(e) {
+    const roleCheckboxes = document.querySelectorAll('input[name="roles[]"]');
+    const isAnyChecked = Array.from(roleCheckboxes).some(cb => cb.checked);
+    const errorMsg = document.getElementById('role_error');
+
+    if (!isAnyChecked) {
+        e.preventDefault();
+        errorMsg.style.display = 'block';
+        roleCheckboxes[0].focus();
+    } else {
+        errorMsg.style.display = 'none';
+    }
+});
+
+// Slēpt kļūdas ziņojumu, kad lietotājs atzīmē checkbox
+document.querySelectorAll('input[name="roles[]"]').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const roleCheckboxes = document.querySelectorAll('input[name="roles[]"]');
+        const isAnyChecked = Array.from(roleCheckboxes).some(cb => cb.checked);
+        const errorMsg = document.getElementById('role_error');
+
+        if (isAnyChecked) {
+            errorMsg.style.display = 'none';
+        }
+    });
+});
 </script>
 
 <?php

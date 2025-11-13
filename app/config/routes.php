@@ -79,6 +79,8 @@ $router->get('/admin/settings', 'AdminController@settings', 'admin.settings');
 $router->post('/admin/settings', 'AdminController@saveSettings');
 $router->get('/admin/migrate', 'AdminController@migrate', 'admin.migrate');
 $router->post('/admin/migrate/run', 'AdminController@runMigration', 'admin.migrate.run');
+$router->get('/admin/emails', 'AdminController@emails', 'admin.emails');
+$router->get('/admin/emails/view/{filename}', 'AdminController@viewEmail', 'admin.emails.view');
 
 // Landing pages (tiešās saites)
 $router->get('/l/{slug}', 'LandingController@show', 'landing');

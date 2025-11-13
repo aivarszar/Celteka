@@ -62,6 +62,46 @@ ob_start();
                 </div>
 
                 <div class="form-section">
+                    <h2>Lietotāja lomas</h2>
+                    <?php
+                    // Iegūt lietotāja pašreizējās lomas
+                    $userRoles = AuthHelper::getUserRoles();
+                    ?>
+                    <div class="role-checkboxes" style="background: #f9f9f9; padding: 1rem; border-radius: 8px;">
+                        <div class="form-check" style="margin-bottom: 0.75rem;">
+                            <input type="checkbox" name="roles[]" value="buyer" id="role_buyer" class="form-check-input" <?= in_array('buyer', $userRoles) ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="role_buyer" style="font-weight: 500;">
+                                🛒 <?= lang('auth.role_buyer') ?>
+                            </label>
+                            <small class="d-block" style="margin-left: 1.5rem; color: #666;">
+                                Es vēlos iegādāties produktus un pakalpojumus
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" name="roles[]" value="seller" id="role_seller" class="form-check-input" <?= in_array('seller', $userRoles) ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="role_seller" style="font-weight: 500;">
+                                🏪 <?= lang('auth.role_seller') ?>
+                            </label>
+                            <small class="d-block" style="margin-left: 1.5rem; color: #666;">
+                                Es vēlos pārdot savus produktus un pakalpojumus
+                            </small>
+                        </div>
+                        <?php if (AuthHelper::isAdmin()): ?>
+                        <div class="form-check" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #ddd;">
+                            <input type="checkbox" disabled checked style="opacity: 0.5;">
+                            <label style="font-weight: 500; opacity: 0.7;">
+                                👑 Administrators
+                            </label>
+                            <small class="d-block" style="margin-left: 1.5rem; color: #666;">
+                                Admin loma nav maināma
+                            </small>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <small style="color: #d9534f; display: none;" id="role_error">Lūdzu, izvēlieties vismaz vienu lomu</small>
+                </div>
+
+                <div class="form-section">
                     <h2><?= lang('profile.address_information') ?></h2>
 
                     <div class="form-group">
@@ -234,6 +274,37 @@ ob_start();
                 width: 100%;
             }
         }
+    </style>
+
+    <script>
+    // Validēt, ka vismaz viena loma ir izvēlēta
+    document.querySelector('.profile-form').addEventListener('submit', function(e) {
+        const roleCheckboxes = document.querySelectorAll('input[name="roles[]"]');
+        const isAnyChecked = Array.from(roleCheckboxes).some(cb => cb.checked && !cb.disabled);
+        const errorMsg = document.getElementById('role_error');
+
+        if (!isAnyChecked) {
+            e.preventDefault();
+            errorMsg.style.display = 'block';
+            roleCheckboxes[0].focus();
+        } else {
+            errorMsg.style.display = 'none';
+        }
+    });
+
+    // Slēpt kļūdas ziņojumu, kad lietotājs atzīmē checkbox
+    document.querySelectorAll('input[name="roles[]"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const roleCheckboxes = document.querySelectorAll('input[name="roles[]"]');
+            const isAnyChecked = Array.from(roleCheckboxes).some(cb => cb.checked && !cb.disabled);
+            const errorMsg = document.getElementById('role_error');
+
+            if (isAnyChecked) {
+                errorMsg.style.display = 'none';
+            }
+        });
+    });
+    </script>
 
 <?php
 $content = ob_get_clean();

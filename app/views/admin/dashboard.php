@@ -85,6 +85,10 @@
                 <span class="action-icon">🔄</span>
                 <span class="action-label">Lomu migrācija</span>
             </a>
+            <a href="/admin/emails" class="action-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <span class="action-icon">📧</span>
+                <span class="action-label">Saglabātie e-pasti</span>
+            </a>
         </div>
     </div>
 
