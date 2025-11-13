@@ -205,7 +205,16 @@ return [
         'settings' => 'Iestatījumi',
         'statistics' => 'Statistika',
         'manage' => 'Pārvaldīt',
+        'dashboard' => 'Pārskats',
+        'user_management' => 'Lietotāju pārvaldība',
+        'role_assignment' => 'Lomu piešķiršana',
+        'total_revenue' => 'Kopējie ieņēmumi',
+        'recent_activity' => 'Pēdējās aktivitātes',
     ],
+
+    'common' => [
+        'active' => 'Aktīvs',
+        'inactive' => 'Neaktīvs',
 
     'common' => [
         'save' => 'Saglabāt',

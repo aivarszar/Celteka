@@ -69,8 +69,10 @@ $router->post('/profile/update-password', 'ProfileController@updatePassword', 'p
 // Administratora funkcijas
 $router->get('/admin', 'AdminController@index', 'admin');
 $router->get('/admin/users', 'AdminController@users', 'admin.users');
+$router->post('/admin/users/{id}/roles', 'AdminController@updateUserRoles', 'admin.users.roles');
 $router->get('/admin/products', 'AdminController@products', 'admin.products');
 $router->get('/admin/orders', 'AdminController@orders', 'admin.orders');
+$router->get('/admin/reviews', 'AdminController@reviews', 'admin.reviews');
 $router->get('/admin/categories', 'AdminController@categories', 'admin.categories');
 $router->post('/admin/categories', 'AdminController@storeCategory');
 $router->get('/admin/settings', 'AdminController@settings', 'admin.settings');
