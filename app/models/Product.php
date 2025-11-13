@@ -47,8 +47,14 @@ class Product {
     }
 
     public function getAll($filters = [], $limit = 20, $offset = 0) {
-        $where = ['p.is_active = 1'];
+        $where = [];
         $params = [];
+
+        // Only filter by is_active if NOT in seller management mode
+        // Sellers should see ALL their products (active and inactive)
+        if (empty($filters['seller_id'])) {
+            $where[] = 'p.is_active = 1';
+        }
 
         if (!empty($filters['category_id'])) {
             $where[] = 'p.category_id = :category_id';
@@ -177,12 +183,22 @@ class Product {
     }
 
     public function getCount($filters = []) {
-        $where = ['is_active = 1'];
+        $where = [];
         $params = [];
+
+        // Only filter by is_active if NOT in seller management mode
+        if (empty($filters['seller_id'])) {
+            $where[] = 'is_active = 1';
+        }
 
         if (!empty($filters['category_id'])) {
             $where[] = 'category_id = :category_id';
             $params['category_id'] = $filters['category_id'];
+        }
+
+        if (!empty($filters['seller_id'])) {
+            $where[] = 'seller_id = :seller_id';
+            $params['seller_id'] = $filters['seller_id'];
         }
 
         if (!empty($filters['search'])) {
