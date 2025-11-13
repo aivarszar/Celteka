@@ -23,6 +23,10 @@ $router->post('/login', 'AuthController@login');
 $router->get('/register', 'AuthController@showRegister', 'register');
 $router->post('/register', 'AuthController@register');
 $router->get('/logout', 'AuthController@logout', 'logout');
+$router->get('/forgot-password', 'AuthController@showForgotPassword', 'forgot.password');
+$router->post('/forgot-password', 'AuthController@forgotPassword');
+$router->get('/reset-password', 'AuthController@showResetPassword', 'reset.password');
+$router->post('/reset-password', 'AuthController@resetPassword');
 
 // Produkti
 $router->get('/products', 'ProductController@index', 'products');
