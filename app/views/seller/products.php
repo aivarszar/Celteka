@@ -28,7 +28,7 @@ ob_start();
                             <td style="padding: 1rem;">
                                 <strong><?= e($product['title']) ?></strong>
                                 <?php if (!$product['is_active']): ?>
-                                    <span style="color: var(--danger); font-size: 0.875rem;">(Neaktīvs)</span>
+                                    <span style="color: var(--danger); font-size: 0.875rem;">(<?= lang('product.inactive') ?>)</span>
                                 <?php endif; ?>
                             </td>
                             <td style="padding: 1rem;">€<?= number_format($product['price'], 2) ?></td>
@@ -63,8 +63,8 @@ ob_start();
         </div>
     <?php else: ?>
         <div class="alert alert-info">
-            Jums vēl nav pievienotu produktu vai pakalpojumu.
-            <a href="/seller/products/create">Pievienot jaunu</a>
+            <?= lang('product.no_products_yet') ?>
+            <a href="/seller/products/create"><?= lang('product.add_product') ?></a>
         </div>
     <?php endif; ?>
 </section>

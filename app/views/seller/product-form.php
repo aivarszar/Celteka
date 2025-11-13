@@ -48,25 +48,25 @@ $isEdit = $action === 'edit' && $product;
                     <div class="form-group" id="stockField">
                         <label class="form-label"><?= lang('product.stock') ?></label>
                         <input type="number" name="stock_quantity" class="form-control" value="<?= $isEdit ? $product['stock_quantity'] : '0' ?>">
-                        <small>Atstājiet 0, ja nav noliktavā</small>
+                        <small><?= lang('product.stock_help') ?></small>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label"><?= lang('product.category') ?> *</label>
                         <select name="category_id" class="form-control" required>
-                            <option value="">Izvēlieties kategoriju</option>
-                            <option value="1" <?= $isEdit && $product['category_id'] == 1 ? 'selected' : '' ?>>Pārtika</option>
-                            <option value="2" <?= $isEdit && $product['category_id'] == 2 ? 'selected' : '' ?>>Amatniecība</option>
-                            <option value="3" <?= $isEdit && $product['category_id'] == 3 ? 'selected' : '' ?>>Pakalpojumi</option>
+                            <option value=""><?= lang('product.select_category') ?></option>
+                            <option value="1" <?= $isEdit && $product['category_id'] == 1 ? 'selected' : '' ?>><?= lang('product.category_food') ?></option>
+                            <option value="2" <?= $isEdit && $product['category_id'] == 2 ? 'selected' : '' ?>><?= lang('product.category_crafts') ?></option>
+                            <option value="3" <?= $isEdit && $product['category_id'] == 3 ? 'selected' : '' ?>><?= lang('product.category_services') ?></option>
                         </select>
-                        <small>Ja vajadzīgā kategorija nav pieejama, sazinieties ar administratoru</small>
+                        <small><?= lang('product.contact_admin_for_category') ?></small>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label"><?= lang('product.location') ?></label>
                     <select name="location_id" class="form-control">
-                        <option value="">Izvēlieties lokāciju</option>
+                        <option value=""><?= lang('product.select_location') ?></option>
                         <optgroup label="Rīgas reģions">
                             <option value="7" <?= $isEdit && $product['location_id'] == 7 ? 'selected' : '' ?>>Rīga</option>
                             <option value="8" <?= $isEdit && $product['location_id'] == 8 ? 'selected' : '' ?>>Jūrmala</option>
@@ -93,19 +93,19 @@ $isEdit = $action === 'edit' && $product;
                 <div class="form-group">
                     <label>
                         <input type="checkbox" name="is_active" <?= (!$isEdit || $product['is_active']) ? 'checked' : '' ?>>
-                        Aktīvs (redzams pircējiem)
+                        <?= lang('product.active_visible') ?>
                     </label>
                 </div>
 
                 <?php if ($isEdit && !empty($images)): ?>
                     <div class="form-group">
-                        <label class="form-label">Pašreizējie attēli</label>
+                        <label class="form-label"><?= lang('product.current_images') ?></label>
                         <div class="d-flex gap-2">
                             <?php foreach ($images as $image): ?>
                                 <div style="position: relative;">
                                     <img src="<?= e($image['image_path']) ?>" alt="Product" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;">
                                     <?php if ($image['is_primary']): ?>
-                                        <span style="position: absolute; top: 5px; right: 5px; background: var(--primary); color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">Galvenais</span>
+                                        <span style="position: absolute; top: 5px; right: 5px; background: var(--primary); color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;"><?= lang('product.primary_image') ?></span>
                                     <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
@@ -115,7 +115,7 @@ $isEdit = $action === 'edit' && $product;
 
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
-                        <?= $isEdit ? lang('common.save') : 'Pievienot produktu' ?>
+                        <?= $isEdit ? lang('common.save') : lang('product.add_product') ?>
                     </button>
                     <a href="/seller/products" class="btn btn-secondary"><?= lang('common.cancel') ?></a>
                 </div>
