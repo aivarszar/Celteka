@@ -148,11 +148,11 @@ class ProfileController {
         $result = $this->userModel->update($userId, $data);
 
         if ($result) {
-            // Atjaunot sesijas datus
-            $userData = Session::getUser();
-            $userData['name'] = $name;
-            $userData['email'] = $email;
-            Session::setUser($userData);
+            // Atjaunot sesijas datus - izmantojam pilnus datus no DB
+            $updatedUser = $this->userModel->findById($userId);
+            if ($updatedUser) {
+                Session::setUser($updatedUser);
+            }
 
             Session::flash('success', lang('messages.profile_updated'));
         } else {

@@ -43,14 +43,16 @@
                 ?>
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/" class="<?= isActive('/') ?>"><?= lang('nav.home') ?></a></li>
-                    <li><a href="/products" class="<?= isActive('/product') ?>"><?= lang('nav.products') ?></a></li>
+                    <li><a href="/products" class="<?= isActive('/products') ?>"><?= lang('nav.products') ?></a></li>
+                    <li><a href="/about" class="<?= isActive('/about') ?>"><?= lang('nav.about') ?></a></li>
+                    <li><a href="/contact" class="<?= isActive('/contact') ?>"><?= lang('nav.contact') ?></a></li>
 
                     <?php if (Session::isLoggedIn()): ?>
                         <?php if (AuthHelper::isSeller()): ?>
                             <li><a href="/seller/products" class="<?= isActive('/seller/products') ?>"><?= lang('nav.my_products') ?></a></li>
                             <li><a href="/seller/orders" class="<?= isActive('/seller/orders') ?>"><?= lang('nav.my_orders') ?></a></li>
                         <?php else: ?>
-                            <li><a href="/orders" class="<?= isActive('/order') ?>"><?= lang('nav.my_orders') ?></a></li>
+                            <li><a href="/orders" class="<?= isActive('/orders') ?>"><?= lang('nav.my_orders') ?></a></li>
                         <?php endif; ?>
                         <li><a href="/profile" class="<?= isActive('/profile') ?>"><?= lang('nav.profile') ?></a></li>
                         <?php if (AuthHelper::isAdmin()): ?>

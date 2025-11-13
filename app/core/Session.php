@@ -124,4 +124,29 @@ class Session {
     public static function getUserRole() {
         return self::get('user_role');
     }
+
+    /**
+     * Old input pārvaldība (formu atkārtotai aizpildei)
+     */
+    public static function getOldInput($key = null, $default = '') {
+        $oldInput = self::get('old_input', []);
+
+        if ($key === null) {
+            // Atgriezanim visus old input datus
+            self::delete('old_input');
+            return $oldInput;
+        }
+
+        $value = $oldInput[$key] ?? $default;
+        return $value;
+    }
+
+    public static function hasOldInput($key) {
+        $oldInput = self::get('old_input', []);
+        return isset($oldInput[$key]);
+    }
+
+    public static function clearOldInput() {
+        self::delete('old_input');
+    }
 }

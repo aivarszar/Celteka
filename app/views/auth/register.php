@@ -25,13 +25,23 @@
 
                 <div class="form-group">
                     <label class="form-label"><?= lang('auth.password') ?> *</label>
-                    <input type="password" name="password" class="form-control" minlength="6" required>
+                    <div style="position: relative;">
+                        <input type="password" name="password" id="registerPassword" class="form-control" minlength="6" required style="padding-right: 40px;">
+                        <button type="button" onclick="togglePassword('registerPassword', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="Rādīt/slēpt paroli">
+                            👁️
+                        </button>
+                    </div>
                     <small>Vismaz 6 simboli</small>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label"><?= lang('auth.password_confirm') ?> *</label>
-                    <input type="password" name="password_confirm" class="form-control" required>
+                    <div style="position: relative;">
+                        <input type="password" name="password_confirm" id="registerPasswordConfirm" class="form-control" required style="padding-right: 40px;">
+                        <button type="button" onclick="togglePassword('registerPasswordConfirm', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="Rādīt/slēpt paroli">
+                            👁️
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -54,6 +64,21 @@
         </div>
     </div>
 </section>
+
+<script>
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.innerHTML = '🙈';
+        button.title = 'Slēpt paroli';
+    } else {
+        input.type = 'password';
+        button.innerHTML = '👁️';
+        button.title = 'Rādīt paroli';
+    }
+}
+</script>
 
 <?php
 $content = ob_get_clean();
