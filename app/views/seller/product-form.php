@@ -90,6 +90,58 @@ $isEdit = $action === 'edit' && $product;
                     </select>
                 </div>
 
+                <!-- Maršruta un laika lauki (parādās tikai pakalpojumiem) -->
+                <div id="serviceFields" style="display: none;">
+                    <hr style="margin: 2rem 0;">
+                    <h3><?= lang('product.route_and_schedule') ?? 'Maršruts un laiks' ?></h3>
+
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label"><?= lang('product.route_from') ?? 'No (sākuma punkts)' ?></label>
+                            <input type="text" name="route_from" class="form-control"
+                                   value="<?= $isEdit && isset($meta['route_from']) ? e($meta['route_from']) : '' ?>"
+                                   placeholder="<?= lang('product.route_from_placeholder') ?? 'Piemēram: Rīga, Brīvības iela 1' ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><?= lang('product.route_to') ?? 'Līdz (galapunkts)' ?></label>
+                            <input type="text" name="route_to" class="form-control"
+                                   value="<?= $isEdit && isset($meta['route_to']) ? e($meta['route_to']) : '' ?>"
+                                   placeholder="<?= lang('product.route_to_placeholder') ?? 'Piemēram: Jūrmala' ?>">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label"><?= lang('product.service_date') ?? 'Datums' ?></label>
+                            <input type="date" name="service_date" class="form-control"
+                                   value="<?= $isEdit && isset($meta['service_date']) ? e($meta['service_date']) : '' ?>"
+                                   min="<?= date('Y-m-d') ?>">
+                            <small><?= lang('product.service_date_help') ?? 'Kad notiks pakalpojums' ?></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><?= lang('product.service_time') ?? 'Laiks' ?></label>
+                            <input type="time" name="service_time" class="form-control"
+                                   value="<?= $isEdit && isset($meta['service_time']) ? e($meta['service_time']) : '' ?>">
+                            <small><?= lang('product.service_time_help') ?? 'Sākuma laiks' ?></small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><?= lang('product.capacity') ?? 'Vietu skaits' ?></label>
+                        <input type="number" name="capacity" class="form-control" min="1"
+                               value="<?= $isEdit && isset($meta['capacity']) ? e($meta['capacity']) : '1' ?>">
+                        <small><?= lang('product.capacity_help') ?? 'Maksimālais pieteikumu/vietu skaits' ?></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><?= lang('product.route_notes') ?? 'Papildu informācija par maršrutu' ?></label>
+                        <textarea name="route_notes" class="form-control" rows="3"
+                                  placeholder="<?= lang('product.route_notes_placeholder') ?? 'Piemēram: Pieturvietas, nosacījumi, utt.' ?>"><?= $isEdit && isset($meta['route_notes']) ? e($meta['route_notes']) : '' ?></textarea>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>
                         <input type="checkbox" name="is_active" <?= (!$isEdit || $product['is_active']) ? 'checked' : '' ?>>
@@ -125,19 +177,32 @@ $isEdit = $action === 'edit' && $product;
 </section>
 
 <script>
-// Toggle stock field based on product type
+// Toggle stock field and service fields based on product type
 document.getElementById('productType').addEventListener('change', function() {
     const stockField = document.getElementById('stockField');
+    const serviceFields = document.getElementById('serviceFields');
+
     if (this.value === 'product') {
         stockField.style.display = 'block';
+        serviceFields.style.display = 'none';
     } else {
         stockField.style.display = 'none';
+        // Parādīt maršruta laukus pakalpojumiem
+        if (this.value === 'service' || this.value === 'unique_service') {
+            serviceFields.style.display = 'block';
+        } else {
+            serviceFields.style.display = 'none';
+        }
     }
 });
 
 // Initial check
-if (document.getElementById('productType').value !== 'product') {
+const initialType = document.getElementById('productType').value;
+if (initialType !== 'product') {
     document.getElementById('stockField').style.display = 'none';
+}
+if (initialType === 'service' || initialType === 'unique_service') {
+    document.getElementById('serviceFields').style.display = 'block';
 }
 </script>
 

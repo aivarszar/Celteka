@@ -33,6 +33,7 @@ class SellerController {
     public function createProduct() {
         view('seller/product-form', [
             'product' => null,
+            'meta' => [],
             'action' => 'create',
         ]);
     }
@@ -67,6 +68,28 @@ class SellerController {
 
         $productId = $this->productModel->create($productData);
 
+        // Saglabāt maršruta un laika meta datus (ja ir pakalpojums)
+        if ($productData['type'] === 'service' || $productData['type'] === 'unique_service') {
+            if (!empty($_POST['route_from'])) {
+                $this->productModel->setMeta($productId, 'route_from', trim($_POST['route_from']));
+            }
+            if (!empty($_POST['route_to'])) {
+                $this->productModel->setMeta($productId, 'route_to', trim($_POST['route_to']));
+            }
+            if (!empty($_POST['service_date'])) {
+                $this->productModel->setMeta($productId, 'service_date', trim($_POST['service_date']));
+            }
+            if (!empty($_POST['service_time'])) {
+                $this->productModel->setMeta($productId, 'service_time', trim($_POST['service_time']));
+            }
+            if (!empty($_POST['capacity'])) {
+                $this->productModel->setMeta($productId, 'capacity', intval($_POST['capacity']));
+            }
+            if (!empty($_POST['route_notes'])) {
+                $this->productModel->setMeta($productId, 'route_notes', trim($_POST['route_notes']));
+            }
+        }
+
         // Apstrādāt attēlu augšupielādi (vienkāršota versija)
         // TODO: Pilnvērtīga attēlu augšupielāde
 
@@ -83,10 +106,12 @@ class SellerController {
         }
 
         $images = $this->productModel->getImages($id);
+        $meta = $this->productModel->getMeta($id);
 
         view('seller/product-form', [
             'product' => $product,
             'images' => $images,
+            'meta' => $meta,
             'action' => 'edit',
         ]);
     }
@@ -124,6 +149,28 @@ class SellerController {
         ];
 
         $this->productModel->update($id, $productData);
+
+        // Atjaunināt maršruta un laika meta datus (ja ir pakalpojums)
+        if ($productData['type'] === 'service' || $productData['type'] === 'unique_service') {
+            if (!empty($_POST['route_from'])) {
+                $this->productModel->setMeta($id, 'route_from', trim($_POST['route_from']));
+            }
+            if (!empty($_POST['route_to'])) {
+                $this->productModel->setMeta($id, 'route_to', trim($_POST['route_to']));
+            }
+            if (!empty($_POST['service_date'])) {
+                $this->productModel->setMeta($id, 'service_date', trim($_POST['service_date']));
+            }
+            if (!empty($_POST['service_time'])) {
+                $this->productModel->setMeta($id, 'service_time', trim($_POST['service_time']));
+            }
+            if (!empty($_POST['capacity'])) {
+                $this->productModel->setMeta($id, 'capacity', intval($_POST['capacity']));
+            }
+            if (!empty($_POST['route_notes'])) {
+                $this->productModel->setMeta($id, 'route_notes', trim($_POST['route_notes']));
+            }
+        }
 
         Session::flash('success', 'Produkts atjaunināts veiksmīgi!');
         redirect('/seller/products');
