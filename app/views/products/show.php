@@ -201,6 +201,10 @@ ob_start();
                                         <textarea name="notes" class="form-control" rows="3" placeholder="<?= lang('booking.notes_placeholder') ?? 'Papildu informācija vai jautājumi' ?>"></textarea>
                                     </div>
 
+                                    <div style="padding: 0.75rem; background: #e3f2fd; border-radius: 4px; margin-bottom: 1rem; font-size: 0.875rem;">
+                                        ℹ️ Pēc pieteikšanās pārdevējs pārskatīs jūsu pieprasījumu un apstiprinās pieteikšanos.
+                                    </div>
+
                                     <button type="submit" class="btn btn-primary" style="width: 100%;">
                                         ✓ <?= lang('booking.book_now') ?? 'Pieteikties' ?>
                                     </button>

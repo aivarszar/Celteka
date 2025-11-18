@@ -123,12 +123,13 @@ class Booking {
     }
 
     /**
-     * Saskaitīt apstiprinātas pieteikšanās
+     * Saskaitīt apstiprinātas pieteikšanās (tikai confirmed)
+     * Tikai apstiprinātas pieteikšanās ieskaita kapacitātē
      */
     public function countConfirmedBookings($productId) {
         $sql = "SELECT COALESCE(SUM(quantity), 0) FROM {$this->table}
                 WHERE product_id = :product_id
-                AND status IN ('pending', 'confirmed')";
+                AND status = 'confirmed'";
 
         return (int) $this->db->fetchColumn($sql, ['product_id' => $productId]);
     }
@@ -197,7 +198,9 @@ class Booking {
                     SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) as confirmed_count,
                     SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_count,
                     SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_count,
-                    SUM(CASE WHEN status IN ('pending', 'confirmed') THEN quantity ELSE 0 END) as active_quantity
+                    SUM(CASE WHEN status = 'pending' THEN quantity ELSE 0 END) as pending_quantity,
+                    SUM(CASE WHEN status = 'confirmed' THEN quantity ELSE 0 END) as confirmed_quantity,
+                    SUM(CASE WHEN status = 'confirmed' THEN quantity ELSE 0 END) as active_quantity
                 FROM {$this->table}
                 WHERE product_id = :product_id";
 

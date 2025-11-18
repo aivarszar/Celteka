@@ -85,7 +85,7 @@ class BookingController {
         try {
             $bookingId = $this->bookingModel->create($bookingData);
 
-            Session::flash('success', 'Pieteikšanās veiksmīga! Pārdevējs sazināsies ar jums.');
+            Session::flash('success', 'Pieteikšanās veiksmīga! Gaida pārdevēja apstiprinājumu. Pārdevējs sazināsies ar jums pēc apstiprinājuma.');
             redirect('/bookings');
 
         } catch (Exception $e) {

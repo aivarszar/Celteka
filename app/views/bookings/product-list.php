@@ -46,10 +46,15 @@ ob_start();
                     <div class="capacity-fill" style="width: <?= $percentage ?>%"></div>
                 </div>
                 <div class="capacity-stats">
-                    <span><?= $activeBookings ?> / <?= $capacity ?> aizņemtas vietas</span>
+                    <span><?= $activeBookings ?> / <?= $capacity ?> aizņemtas vietas (apstiprinātas)</span>
                     <span class="remaining"><?= $remaining ?> brīvas</span>
                 </div>
             </div>
+            <?php if ($stats['pending_quantity'] > 0): ?>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: #fff3cd; border-radius: 4px; font-size: 0.875rem;">
+                    ℹ️ <strong>Piezīme:</strong> <?= $stats['pending_quantity'] ?> vietas gaida jūsu apstiprinājumu un vēl NAV ieskaitītas kapacitātē.
+                </div>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 

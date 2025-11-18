@@ -64,6 +64,16 @@ ob_start();
                             </div>
                         <?php endif; ?>
 
+                        <?php if ($booking['status'] === 'pending'): ?>
+                            <div class="status-info" style="background: #fff3cd; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.875rem;">
+                                ⏳ <strong>Gaida apstiprinājumu</strong> - Pārdevējs pārskatīs jūsu pieteikšanos un sazināsies ar jums.
+                            </div>
+                        <?php elseif ($booking['status'] === 'confirmed'): ?>
+                            <div class="status-info" style="background: #d1ecf1; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.875rem;">
+                                ✓ <strong>Apstiprināts</strong> - Pieteikšanās ir apstiprināta. Pārdevējs sazināsies ar jums par detaļām.
+                            </div>
+                        <?php endif; ?>
+
                         <div class="booking-actions">
                             <a href="/products/<?= $booking['product_id'] ?>" class="btn btn-secondary btn-sm">
                                 Skatīt produktu

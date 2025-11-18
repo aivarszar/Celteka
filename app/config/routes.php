@@ -62,11 +62,11 @@ $router->post('/review/order/{id}', 'ReviewController@store', 'review.store');
 // Pieteikšanās (bookings)
 $router->get('/bookings', 'BookingController@index', 'bookings');
 $router->post('/bookings/book/{id}', 'BookingController@book', 'bookings.book');
-$router->get('/bookings/{id}', 'BookingController@show', 'bookings.show');
 $router->get('/bookings/product/{id}', 'BookingController@productBookings', 'bookings.product');
 $router->post('/bookings/{id}/confirm', 'BookingController@confirm', 'bookings.confirm');
 $router->post('/bookings/{id}/cancel', 'BookingController@cancel', 'bookings.cancel');
 $router->post('/bookings/{id}/complete', 'BookingController@complete', 'bookings.complete');
+$router->get('/bookings/{id}', 'BookingController@show', 'bookings.show');
 
 // Profils
 $router->get('/profile', 'ProfileController@index', 'profile');
