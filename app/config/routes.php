@@ -88,6 +88,13 @@ $router->get('/admin/emails/view/{filename}', 'AdminController@viewEmail', 'admi
 // Landing pages (tiešās saites)
 $router->get('/l/{slug}', 'LandingController@show', 'landing');
 
+// Importēšana
+$router->get('/import', 'ImportController@index', 'import');
+$router->post('/import/from-url', 'ImportController@fromUrl', 'import.fromurl');
+$router->get('/import/preview', 'ImportController@preview', 'import.preview');
+$router->post('/import/confirm', 'ImportController@confirm', 'import.confirm');
+$router->get('/import/cancel', 'ImportController@cancel', 'import.cancel');
+
 // API endpoints (ja nepieciešams)
 $router->get('/api/locations/{type}', 'ApiController@locations');
 $router->get('/api/categories', 'ApiController@categories');
