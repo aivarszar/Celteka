@@ -62,6 +62,15 @@ return [
         'seller' => 'Müüja',
         'in_stock' => 'Laos',
         'out_of_stock' => 'Pole laos',
+        // Teenuse väljad
+        'route_and_schedule' => 'Marsruut ja aeg',
+        'route_from' => 'Alates (lähtepunkt)',
+        'route_to' => 'Kuni (sihtpunkt)',
+        'service_date' => 'Kuupäev',
+        'service_time' => 'Kellaaeg',
+        'capacity' => 'Kohtade arv',
+        'route_notes' => 'Marsruudi märkused',
+        'available' => 'saadaval',
     ],
 
     'order' => [
@@ -106,6 +115,42 @@ return [
         'buyer_review' => 'Ostja hinnang',
         'seller_review' => 'Müüja hinnang',
         'no_reviews' => 'Arvustusi pole veel',
+    ],
+
+    'booking' => [
+        'bookings' => 'Broneeringud',
+        'booking' => 'Broneering',
+        'book_now' => 'Broneeri nüüd',
+        'view_bookings' => 'Vaata broneeringuid',
+        'manage_bookings' => 'Halda broneeringuid',
+        'my_bookings' => 'Minu broneeringud',
+        'quantity' => 'Kohtade arv',
+        'notes' => 'Märkused',
+        'notes_placeholder' => 'Lisateave või soovid (valikuline)',
+        'booking_date' => 'Broneeringu kuupäev',
+        'booking_time' => 'Broneeringu kellaaeg',
+        'already_booked' => 'Olete selle toote juba broneerinud',
+        'no_capacity' => 'Kõik kohad on täis',
+        'pending_approval' => 'Ootel kinnitust',
+        'confirmed' => 'Kinnitatud',
+        'completed' => 'Lõpetatud',
+        'cancelled' => 'Tühistatud',
+        // Staatused
+        'status_pending' => 'Ootel kinnitust',
+        'status_confirmed' => 'Kinnitatud',
+        'status_completed' => 'Lõpetatud',
+        'status_cancelled' => 'Tühistatud',
+        // Tegevused
+        'confirm_booking' => 'Kinnita broneering',
+        'cancel_booking' => 'Tühista broneering',
+        'complete_booking' => 'Lõpeta broneering',
+        // Sõnumid
+        'success_created' => 'Broneering õnnestus! Ootel müüja kinnitust.',
+        'success_confirmed' => 'Broneering kinnitatud',
+        'success_cancelled' => 'Broneering tühistatud',
+        'success_completed' => 'Broneering lõpetatud',
+        'buyer_bookings' => 'Minu toodete broneeringud',
+        'seller_bookings' => 'Saadud broneeringud (müüjana)',
     ],
 
     'common' => [

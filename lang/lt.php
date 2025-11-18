@@ -62,6 +62,15 @@ return [
         'seller' => 'Pardavėjas',
         'in_stock' => 'Sandėlyje',
         'out_of_stock' => 'Nėra sandėlyje',
+        // Paslaugų laukai
+        'route_and_schedule' => 'Maršrutas ir laikas',
+        'route_from' => 'Nuo (pradžios taškas)',
+        'route_to' => 'Iki (galutinis taškas)',
+        'service_date' => 'Data',
+        'service_time' => 'Laikas',
+        'capacity' => 'Vietų skaičius',
+        'route_notes' => 'Pastabos apie maršrutą',
+        'available' => 'laisva',
     ],
 
     'order' => [
@@ -106,6 +115,42 @@ return [
         'buyer_review' => 'Pirkėjo įvertinimas',
         'seller_review' => 'Pardavėjo įvertinimas',
         'no_reviews' => 'Kol kas nėra atsiliepimų',
+    ],
+
+    'booking' => [
+        'bookings' => 'Rezervacijos',
+        'booking' => 'Rezervacija',
+        'book_now' => 'Rezervuoti dabar',
+        'view_bookings' => 'Peržiūrėti rezervacijas',
+        'manage_bookings' => 'Valdyti rezervacijas',
+        'my_bookings' => 'Mano rezervacijos',
+        'quantity' => 'Vietų skaičius',
+        'notes' => 'Pastabos',
+        'notes_placeholder' => 'Papildoma informacija arba pageidavimai (neprivaloma)',
+        'booking_date' => 'Rezervacijos data',
+        'booking_time' => 'Rezervacijos laikas',
+        'already_booked' => 'Jūs jau užsiregistravote šiam produktui',
+        'no_capacity' => 'Visos vietos užimtos',
+        'pending_approval' => 'Laukiama patvirtinimo',
+        'confirmed' => 'Patvirtinta',
+        'completed' => 'Užbaigta',
+        'cancelled' => 'Atšaukta',
+        // Statusai
+        'status_pending' => 'Laukiama patvirtinimo',
+        'status_confirmed' => 'Patvirtinta',
+        'status_completed' => 'Užbaigta',
+        'status_cancelled' => 'Atšaukta',
+        // Veiksmai
+        'confirm_booking' => 'Patvirtinti rezervaciją',
+        'cancel_booking' => 'Atšaukti rezervaciją',
+        'complete_booking' => 'Užbaigti rezervaciją',
+        // Pranešimai
+        'success_created' => 'Rezervacija sėkminga! Laukiama pardavėjo patvirtinimo.',
+        'success_confirmed' => 'Rezervacija patvirtinta',
+        'success_cancelled' => 'Rezervacija atšaukta',
+        'success_completed' => 'Rezervacija užbaigta',
+        'buyer_bookings' => 'Mano rezervacijos produktams',
+        'seller_bookings' => 'Gautos rezervacijos (kaip pardavėjas)',
     ],
 
     'common' => [
