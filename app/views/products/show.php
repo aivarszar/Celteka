@@ -72,6 +72,60 @@ ob_start();
                         <?= $product['views_count'] ?>
                     </div>
 
+                    <!-- Pakalpojuma informācija (maršruts un laiks) -->
+                    <?php if ($product['type'] === 'service' || $product['type'] === 'unique_service'): ?>
+                        <?php if (!empty($meta['route_from']) || !empty($meta['route_to']) || !empty($meta['service_date'])): ?>
+                            <div class="service-details mb-3" style="background: #f9f9f9; padding: 1rem; border-radius: 8px;">
+                                <h3 style="margin-top: 0;"><?= lang('product.route_and_schedule') ?? 'Maršruts un laiks' ?></h3>
+                                <div class="service-info-grid">
+                                    <?php if (!empty($meta['route_from'])): ?>
+                                        <div class="service-info-item">
+                                            <strong>📍 <?= lang('product.route_from') ?? 'No' ?>:</strong>
+                                            <?= e($meta['route_from']) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($meta['route_to'])): ?>
+                                        <div class="service-info-item">
+                                            <strong>📍 <?= lang('product.route_to') ?? 'Līdz' ?>:</strong>
+                                            <?= e($meta['route_to']) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($meta['service_date'])): ?>
+                                        <div class="service-info-item">
+                                            <strong>📅 <?= lang('product.service_date') ?? 'Datums' ?>:</strong>
+                                            <?= date('d.m.Y', strtotime($meta['service_date'])) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($meta['service_time'])): ?>
+                                        <div class="service-info-item">
+                                            <strong>🕐 <?= lang('product.service_time') ?? 'Laiks' ?>:</strong>
+                                            <?= date('H:i', strtotime($meta['service_time'])) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($meta['capacity'])): ?>
+                                        <div class="service-info-item">
+                                            <strong>👥 <?= lang('product.capacity') ?? 'Kapacitāte' ?>:</strong>
+                                            <?php
+                                            $capacity = intval($meta['capacity']);
+                                            $booked = $bookingStats ? intval($bookingStats['active_quantity']) : 0;
+                                            $available = max(0, $capacity - $booked);
+                                            ?>
+                                            <span class="capacity-display" style="font-weight: bold; color: <?= $available > 0 ? '#4caf50' : '#f44336' ?>;">
+                                                <?= $available ?> / <?= $capacity ?> <?= lang('product.available') ?? 'pieejamas' ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($meta['route_notes'])): ?>
+                                        <div class="service-info-item" style="margin-top: 0.5rem;">
+                                            <strong>ℹ️ <?= lang('product.route_notes') ?? 'Papildu informācija' ?>:</strong>
+                                            <p style="margin: 0.5rem 0 0 0; color: #555;"><?= nl2br(e($meta['route_notes'])) ?></p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
                     <hr>
 
                     <!-- Seller Info -->
@@ -99,23 +153,78 @@ ob_start();
 
                     <!-- Actions -->
                     <?php if (Session::isLoggedIn() && Session::getUserId() != $product['seller_id']): ?>
-                        <form action="/cart/add/<?= $product['id'] ?>" method="post">
-                            <?= csrf_field() ?>
-                            <?php if ($product['type'] === 'product'): ?>
+                        <?php if ($product['type'] === 'product'): ?>
+                            <!-- Parasts produkts - pievienot grozam -->
+                            <form action="/cart/add/<?= $product['id'] ?>" method="post">
+                                <?= csrf_field() ?>
                                 <div class="form-group">
                                     <label><?= lang('order.quantity') ?>:</label>
                                     <input type="number" name="quantity" value="1" min="1" max="<?= $product['stock_quantity'] ?>" class="form-control">
                                 </div>
-                            <?php endif; ?>
 
-                            <button type="submit" class="btn btn-primary" style="width: 100%;" <?= ($product['type'] === 'product' && $product['stock_quantity'] <= 0) ? 'disabled' : '' ?>>
-                                🛒 <?= lang('order.add_to_cart') ?>
-                            </button>
-                        </form>
+                                <button type="submit" class="btn btn-primary" style="width: 100%;" <?= $product['stock_quantity'] <= 0 ? 'disabled' : '' ?>>
+                                    🛒 <?= lang('order.add_to_cart') ?>
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <!-- Pakalpojums - pieteikšanās -->
+                            <?php
+                            $canBook = true;
+                            $bookingMessage = '';
+
+                            // Pārbaudīt vai jau ir pieteicies
+                            if ($hasBooked) {
+                                $canBook = false;
+                                $bookingMessage = lang('booking.already_booked') ?? 'Jūs jau esat pieteicies šim pakalpojumam';
+                            }
+
+                            // Pārbaudīt kapacitāti
+                            if ($canBook && !empty($meta['capacity'])) {
+                                $capacity = intval($meta['capacity']);
+                                $booked = $bookingStats ? intval($bookingStats['active_quantity']) : 0;
+                                if ($booked >= $capacity) {
+                                    $canBook = false;
+                                    $bookingMessage = lang('booking.no_capacity') ?? 'Visas vietas ir aizņemtas';
+                                }
+                            }
+                            ?>
+
+                            <?php if ($canBook): ?>
+                                <form action="/bookings/book/<?= $product['id'] ?>" method="post">
+                                    <?= csrf_field() ?>
+                                    <div class="form-group">
+                                        <label><?= lang('booking.quantity') ?? 'Vietu skaits' ?>:</label>
+                                        <input type="number" name="quantity" value="1" min="1" max="10" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?= lang('booking.notes') ?? 'Piezīmes (neobligāti)' ?>:</label>
+                                        <textarea name="notes" class="form-control" rows="3" placeholder="<?= lang('booking.notes_placeholder') ?? 'Papildu informācija vai jautājumi' ?>"></textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                        ✓ <?= lang('booking.book_now') ?? 'Pieteikties' ?>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <div class="alert alert-warning" style="padding: 1rem; background: #fff3cd; border-radius: 8px; margin-bottom: 1rem;">
+                                    <?= e($bookingMessage) ?>
+                                </div>
+                                <?php if ($hasBooked): ?>
+                                    <a href="/bookings" class="btn btn-secondary" style="width: 100%;">
+                                        Skatīt manas pieteikšanās
+                                    </a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        <?php endif; ?>
                     <?php elseif (Session::isLoggedIn() && Session::getUserId() == $product['seller_id']): ?>
-                        <a href="/seller/products/<?= $product['id'] ?>/edit" class="btn btn-primary" style="width: 100%;">
+                        <a href="/seller/products/<?= $product['id'] ?>/edit" class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;">
                             ✏️ <?= lang('product.edit_product') ?>
                         </a>
+                        <?php if ($product['type'] !== 'product'): ?>
+                            <a href="/bookings/product/<?= $product['id'] ?>" class="btn btn-secondary" style="width: 100%;">
+                                👥 Skatīt pieteikšanās (<?= $bookingStats ? $bookingStats['total_bookings'] : 0 ?>)
+                            </a>
+                        <?php endif; ?>
                     <?php else: ?>
                         <a href="/login" class="btn btn-primary" style="width: 100%;">
                             <?= lang('product.login_to_order') ?>

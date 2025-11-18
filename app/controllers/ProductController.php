@@ -54,6 +54,19 @@ class ProductController {
         // Iegūt attēlus
         $images = $this->productModel->getImages($product['id']);
 
+        // Iegūt meta datus (maršruts, laiks, kapacitāte)
+        $meta = $this->productModel->getMeta($product['id']);
+
+        // Iegūt pieteikšanās informāciju
+        $hasBooked = false;
+        $bookingStats = null;
+        if (Session::isLoggedIn()) {
+            require_once __DIR__ . '/../models/Booking.php';
+            $bookingModel = new Booking();
+            $hasBooked = $bookingModel->hasUserBooked($product['id'], Session::getUserId());
+            $bookingStats = $bookingModel->getProductStats($product['id']);
+        }
+
         // Iegūt pārdevēja vērtējumu
         $sellerRating = $this->reviewModel->getAverageRating($product['seller_id'], 'buyer_to_seller');
         $sellerReviewCount = $this->reviewModel->getRatingCount($product['seller_id'], 'buyer_to_seller');
@@ -61,6 +74,9 @@ class ProductController {
         view('products/show', [
             'product' => $product,
             'images' => $images,
+            'meta' => $meta,
+            'hasBooked' => $hasBooked,
+            'bookingStats' => $bookingStats,
             'sellerRating' => $sellerRating,
             'sellerReviewCount' => $sellerReviewCount,
         ]);

@@ -17,7 +17,7 @@ ob_start();
                         <th style="padding: 1rem; text-align: left;"><?= lang('product.title') ?></th>
                         <th style="padding: 1rem; text-align: left;"><?= lang('product.price') ?></th>
                         <th style="padding: 1rem; text-align: left;"><?= lang('product.type') ?></th>
-                        <th style="padding: 1rem; text-align: left;"><?= lang('product.stock') ?></th>
+                        <th style="padding: 1rem; text-align: left;"><?= lang('product.stock') ?> / <?= lang('booking.bookings') ?? 'Pieteikšanās' ?></th>
                         <th style="padding: 1rem; text-align: left;"><?= lang('common.created_at') ?></th>
                         <th style="padding: 1rem; text-align: center;"><?= lang('common.actions') ?></th>
                     </tr>
@@ -48,7 +48,23 @@ ob_start();
                                 ?>
                             </td>
                             <td style="padding: 1rem;">
-                                <?= $product['type'] === 'product' ? $product['stock_quantity'] : 'N/A' ?>
+                                <?php if ($product['type'] === 'product'): ?>
+                                    <!-- Parādīt krājumu produktiem -->
+                                    <?= $product['stock_quantity'] ?>
+                                <?php else: ?>
+                                    <!-- Parādīt pieteikšanās skaitu pakalpojumiem -->
+                                    <?php
+                                    $stats = $bookingStats[$product['id']] ?? null;
+                                    if ($stats && $stats['total_bookings'] > 0):
+                                    ?>
+                                        <a href="/bookings/product/<?= $product['id'] ?>" style="text-decoration: none; color: #2196F3;">
+                                            👥 <?= $stats['total_bookings'] ?>
+                                            (<?= $stats['pending_count'] ?> jauni)
+                                        </a>
+                                    <?php else: ?>
+                                        <span style="color: #999;">Nav pieteikšanās</span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
                             </td>
                             <td style="padding: 1rem;">
                                 <?= date('d.m.Y', strtotime($product['created_at'])) ?>
@@ -56,6 +72,9 @@ ob_start();
                             <td style="padding: 1rem; text-align: center;">
                                 <a href="/product/<?= e($product['slug']) ?>" class="btn btn-sm" title="<?= lang('common.view') ?>">👁️</a>
                                 <a href="/seller/products/<?= $product['id'] ?>/edit" class="btn btn-sm" title="<?= lang('common.edit') ?>">✏️</a>
+                                <?php if ($product['type'] !== 'product'): ?>
+                                    <a href="/bookings/product/<?= $product['id'] ?>" class="btn btn-sm" title="<?= lang('booking.view_bookings') ?? 'Skatīt pieteikšanās' ?>">📋</a>
+                                <?php endif; ?>
                                 <form action="/seller/products/<?= $product['id'] ?>/delete" method="post" style="display: inline;" onsubmit="return confirmDelete()">
                                     <?= csrf_field() ?>
                                     <button type="submit" class="btn btn-sm" style="background: none; border: none; cursor: pointer;" title="<?= lang('common.delete') ?>">🗑️</button>

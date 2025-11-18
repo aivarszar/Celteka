@@ -25,8 +25,18 @@ class SellerController {
         $userId = Session::getUserId();
         $products = $this->productModel->getAll(['seller_id' => $userId], 100);
 
+        // Iegūt pieteikšanās statistiku katram produktam
+        require_once __DIR__ . '/../models/Booking.php';
+        $bookingModel = new Booking();
+        $bookingStats = [];
+
+        foreach ($products as $product) {
+            $bookingStats[$product['id']] = $bookingModel->getProductStats($product['id']);
+        }
+
         view('seller/products', [
             'products' => $products,
+            'bookingStats' => $bookingStats,
         ]);
     }
 
